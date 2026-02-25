@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動英語電子書</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        h1 { color: #2c3e50; }
+        .word-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; width: 100%; max-width: 600px; }
+        .word-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        .word-text { font-size: 24px; font-weight: bold; margin-bottom: 10px; cursor: pointer; color: #007bff; }
+        .word-text:hover { color: #0056b3; text-decoration: underline; }
+        button { margin: 5px; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-record { background: #ff4757; color: white; }
+        .btn-stop { background: #2f3542; color: white; display: none; }
+        .btn-play { background: #2ed573; color: white; display: none; }
+        audio { margin-top: 10px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <h1>📖 英語詞語練習</h1>
+    <p>點擊單字聽英式發音，錄製後可點擊播放聽回效果。</p>
+
+    <div class="word-grid" id="grid"></div>
+
+    <script>
+        // 在這裡輸入你的 7 個詞語
+        const words = ["Apple", "Banana", "Cherry", "Dragonfruit", "Elderberry", "Fig", "Grape"];
+
+        const grid = document.getElementById('grid');
+
+        words.forEach((word, index) => {
+            const card = document.createElement('div');
+            card.className = 'word-card';
+            card.innerHTML = `
+                <div class="word-text" onclick="speak('${word}')">${word}</div>
+                <button class="btn-record" id="rec-${index}" onclick="startRecording(${index})">🎤 錄音</button>
+                <button class="btn-stop" id="stop-${index}" onclick="stopRecording(${index})">⏹ 停止</button>
+                <button class="btn-play" id="play-${index}" onclick="playRecording(${index})">▶️ 聽回</button>
+            `;
+            grid.appendChild(card);
+        });
+
+        // 1. 英式發音功能
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-GB'; // 設定為英式英語
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // 2. 錄音功能
+        let recorders = [];
+        let audioChunks = [];
+
+        async function startRecording(index) {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            recorders[index] = mediaRecorder;
+            audioChunks[index] = [];
+
+            mediaRecorder.ondataavailable = e => audioChunks[index].push(e.data);
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(audioChunks[index], { type: 'audio/wav' });
+                const url = URL.createObjectURL(blob);
+                window[`audioUrl-${index}`] = url;
+                document.getElementById(`play-${index}`).style.display = 'inline-block';
+            };
+
+            mediaRecorder.start();
+            document.getElementById(`rec-${index}`).style.display = 'none';
+            document.getElementById(`stop-${index}`).style.display = 'inline-block';
+        }
+
+        function stopRecording(index) {
+            recorders[index].stop();
+            document.getElementById(`stop-${index}`).style.display = 'none';
+            document.getElementById(`rec-${index}`).style.display = 'inline-block';
+        }
+
+        function playRecording(index) {
+            const audio = new Audio(window[`audioUrl-${index}`]);
+            audio.play();
+        }
+    </script>
+</body>
+</html>
