@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unit 1 Vocabulary - 语音练习（反馈增强版）</title>
+    <title>Book 1A Unit 1 Vocabulary</title>
     <style>
         * {
             margin: 0;
@@ -37,8 +37,14 @@
         }
 
         .header h1 {
-            font-size: 2.5em;
+            font-size: 2.2em;
             margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.95;
         }
 
         .browser-warning {
@@ -99,15 +105,15 @@
 
         .vocabulary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
             margin-bottom: 30px;
         }
 
         .vocab-card {
             background: white;
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -129,20 +135,105 @@
 
         .vocab-number {
             display: inline-block;
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-radius: 50%;
-            line-height: 40px;
+            line-height: 35px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
         }
 
-        .vocab-text {
-            font-size: 1.5em;
+        .vocab-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+        }
+
+        .vocab-english {
+            font-size: 1.6em;
             font-weight: bold;
             color: #333;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+
+        .vowel {
+            color: #e53935;
+            font-weight: bold;
+        }
+
+        .vocab-phonetic {
+            font-size: 1.1em;
+            color: #667eea;
+            font-style: italic;
+            margin: 8px 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .vocab-chinese {
+            font-size: 1.3em;
+            color: #f5576c;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+
+        .syllable-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 12px 0;
+            flex-wrap: wrap;
+        }
+
+        .syllable {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+
+        .syllable-text {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .syllable-bracket {
+            font-size: 0.9em;
+            color: #667eea;
+            font-weight: bold;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 2px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .speaker-icon {
+            font-size: 1.8em;
+            margin-top: 10px;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .vocab-card:hover .speaker-icon {
+            opacity: 1;
+            transform: scale(1.2);
         }
 
         .practice-section {
@@ -150,6 +241,7 @@
             border-radius: 15px;
             padding: 30px;
             margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .section-title {
@@ -301,7 +393,6 @@
             color: white;
         }
 
-        /* 文字反馈区域样式 */
         .text-feedback {
             margin-top: 25px;
             padding: 25px;
@@ -405,7 +496,7 @@
             flex-wrap: wrap;
         }
 
-        .syllable {
+        .syllable-item {
             background: #667eea;
             color: white;
             padding: 5px 12px;
@@ -413,7 +504,7 @@
             font-size: 0.9em;
         }
 
-        .syllable.stressed {
+        .syllable-item.stressed {
             background: #f5576c;
             font-weight: bold;
         }
@@ -475,6 +566,14 @@
         }
 
         @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.6em;
+            }
+            
+            .vocab-english {
+                font-size: 1.3em;
+            }
+            
             .controls {
                 flex-direction: column;
             }
@@ -493,45 +592,206 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📚 Vocabulary</h1>
-            <div>Unit 1 - 反馈增强版</div>
+            <h1>📚 Book 1A Unit 1 Vocabulary</h1>
+            <div class="subtitle">編程設計：伍子謙老師</div>
         </div>
 
         <div class="browser-warning" id="browserWarning">
-            <strong>⚠️ 浏览器兼容性提示</strong><br>
-            您的浏览器可能不完全支持语音功能。建议使用 <strong>Chrome</strong> 或 <strong>Edge</strong> 浏览器以获得最佳体验。
+            <strong>⚠️ 瀏覽器兼容性提示</strong><br>
+            您的瀏覽器可能不完全支持語音功能。建議使用 <strong>Chrome</strong> 或 <strong>Edge</strong> 瀏覽器以獲得最佳體驗。
         </div>
 
         <div class="error-message" id="errorMessage"></div>
 
         <div class="vocabulary-grid">
+            <!-- 1. Good morning -->
             <div class="vocab-card" data-word="Good morning" data-id="1">
                 <div class="vocab-number">1</div>
-                <div class="vocab-text">Good morning</div>
+                <div class="vocab-image">🌅</div>
+                <div class="vocab-english">
+                    G<span class="vowel">oo</span>d m<span class="vowel">or</span>n<span class="vowel">i</span>ng
+                </div>
+                <div class="vocab-phonetic">/ɡʊd ˈmɔː.nɪŋ/</div>
+                <div class="vocab-chinese">早上好</div>
+                <div class="syllable-container">
+                    <div class="syllable">
+                        <span class="syllable-text">G<span class="vowel">oo</span>d</span>
+                        <span class="syllable-bracket">[1]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text">m<span class="vowel">or</span>n</span>
+                        <span class="syllable-bracket">[2]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text"><span class="vowel">i</span>ng</span>
+                        <span class="syllable-bracket">[3]</span>
+                    </div>
+                </div>
+                <div class="speaker-icon">🔊</div>
             </div>
+
+            <!-- 2. Good afternoon -->
             <div class="vocab-card" data-word="Good afternoon" data-id="2">
                 <div class="vocab-number">2</div>
-                <div class="vocab-text">Good afternoon</div>
+                <div class="vocab-image">☀️</div>
+                <div class="vocab-english">
+                    G<span class="vowel">oo</span>d <span class="vowel">a</span>ft<span class="vowel">e</span>rn<span class="vowel">oo</span>n
+                </div>
+                <div class="vocab-phonetic">/ɡʊd ɑːf.təˈnuːn/</div>
+                <div class="vocab-chinese">下午好</div>
+                <div class="syllable-container">
+                    <div class="syllable">
+                        <span class="syllable-text">G<span class="vowel">oo</span>d</span>
+                        <span class="syllable-bracket">[1]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text"><span class="vowel">a</span>ft</span>
+                        <span class="syllable-bracket">[2]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text"><span class="vowel">e</span>rn</span>
+                        <span class="syllable-bracket">[3]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text"><span class="vowel">oo</span>n</span>
+                        <span class="syllable-bracket">[4]</span>
+                    </div>
+                </div>
+                <div class="speaker-icon">🔊</div>
             </div>
+
+            <!-- 3. Goodbye -->
             <div class="vocab-card" data-word="Goodbye" data-id="3">
                 <div class="vocab-number">3</div>
-                <div class="vocab-text">Goodbye</div>
+                <div class="vocab-image">👋</div>
+                <div class="vocab-english">
+                    G<span class="vowel">oo</span>db<span class="vowel">y</span><span class="vowel">e</span>
+                </div>
+                <div class="vocab-phonetic">/ɡʊdˈbaɪ/</div>
+                <div class="vocab-chinese">再見</div>
+                <div class="syllable-container">
+                    <div class="syllable">
+                        <span class="syllable-text">G<span class="vowel">oo</span>d</span>
+                        <span class="syllable-bracket">[1]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text">b<span class="vowel">y</span><span class="vowel">e</span></span>
+                        <span class="syllable-bracket">[2]</span>
+                    </div>
+                </div>
+                <div class="speaker-icon">🔊</div>
             </div>
+
+            <!-- 4. a classmate -->
             <div class="vocab-card" data-word="a classmate" data-id="4">
                 <div class="vocab-number">4</div>
-                <div class="vocab-text">a classmate</div>
+                <div class="vocab-image">👥</div>
+                <div class="vocab-english">
+                    <span class="vowel">a</span> cl<span class="vowel">a</span>ssm<span class="vowel">a</span>t<span class="vowel">e</span>
+                </div>
+                <div class="vocab-phonetic">/ə ˈklɑːs.meɪt/</div>
+                <div class="vocab-chinese">同學</div>
+                <div class="syllable-container">
+                    <div class="syllable">
+                        <span class="syllable-text"><span class="vowel">a</span></span>
+                        <span class="syllable-bracket">[1]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text">cl<span class="vowel">a</span>ss</span>
+                        <span class="syllable-bracket">[2]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text">m<span class="vowel">a</span>t<span class="vowel">e</span></span>
+                        <span class="syllable-bracket">[3]</span>
+                    </div>
+                </div>
+                <div class="speaker-icon">🔊</div>
             </div>
+
+            <!-- 5. a monitor -->
             <div class="vocab-card" data-word="a monitor" data-id="5">
                 <div class="vocab-number">5</div>
-                <div class="vocab-text">a monitor</div>
+                <div class="vocab-image">👦</div>
+                <div class="vocab-english">
+                    <span class="vowel">a</span> m<span class="vowel">o</span>n<span class="vowel">i</span>t<span class="vowel">o</span>r
+                </div>
+                <div class="vocab-phonetic">/ə ˈmɒn.ɪ.tər/</div>
+                <div class="vocab-chinese">班長（男）</div>
+                <div class="syllable-container">
+                    <div class="syllable">
+                        <span class="syllable-text"><span class="vowel">a</span></span>
+                        <span class="syllable-bracket">[1]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text">m<span class="vowel">o</span>n</span>
+                        <span class="syllable-bracket">[2]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text"><span class="vowel">i</span></span>
+                        <span class="syllable-bracket">[3]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text">t<span class="vowel">o</span>r</span>
+                        <span class="syllable-bracket">[4]</span>
+                    </div>
+                </div>
+                <div class="speaker-icon">🔊</div>
             </div>
+
+            <!-- 6. a teacher -->
             <div class="vocab-card" data-word="a teacher" data-id="6">
                 <div class="vocab-number">6</div>
-                <div class="vocab-text">a teacher</div>
+                <div class="vocab-image">👩‍</div>
+                <div class="vocab-english">
+                    <span class="vowel">a</span> t<span class="vowel">ea</span>ch<span class="vowel">e</span>r
+                </div>
+                <div class="vocab-phonetic">/ə ˈtiː.tər/</div>
+                <div class="vocab-chinese">老師</div>
+                <div class="syllable-container">
+                    <div class="syllable">
+                        <span class="syllable-text"><span class="vowel">a</span></span>
+                        <span class="syllable-bracket">[1]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text">t<span class="vowel">ea</span>ch</span>
+                        <span class="syllable-bracket">[2]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text"><span class="vowel">e</span>r</span>
+                        <span class="syllable-bracket">[3]</span>
+                    </div>
+                </div>
+                <div class="speaker-icon">🔊</div>
             </div>
+
+            <!-- 7. a monitress -->
             <div class="vocab-card" data-word="a monitress" data-id="7">
                 <div class="vocab-number">7</div>
-                <div class="vocab-text">a monitress</div>
+                <div class="vocab-image">👧</div>
+                <div class="vocab-english">
+                    <span class="vowel">a</span> m<span class="vowel">o</span>n<span class="vowel">i</span>tr<span class="vowel">e</span>ss
+                </div>
+                <div class="vocab-phonetic">/ə ˈmɒn.ɪ.trəs/</div>
+                <div class="vocab-chinese">班長（女）</div>
+                <div class="syllable-container">
+                    <div class="syllable">
+                        <span class="syllable-text"><span class="vowel">a</span></span>
+                        <span class="syllable-bracket">[1]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text">m<span class="vowel">o</span>n</span>
+                        <span class="syllable-bracket">[2]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text"><span class="vowel">i</span></span>
+                        <span class="syllable-bracket">[3]</span>
+                    </div>
+                    <div class="syllable">
+                        <span class="syllable-text">tr<span class="vowel">e</span>ss</span>
+                        <span class="syllable-bracket">[4]</span>
+                    </div>
+                </div>
+                <div class="speaker-icon">🔊</div>
             </div>
         </div>
 
@@ -539,27 +799,27 @@
             <h2 class="section-title">🎤 Pronunciation Practice</h2>
             
             <div class="instructions">
-                <h3>使用说明：</h3>
+                <h3>使用說明：</h3>
                 <ol>
-                    <li>使用 <strong>Chrome</strong> 或 <strong>Edge</strong> 浏览器（需要 HTTPS 或 localhost）</li>
-                    <li>点击词汇卡片，听标准发音</li>
-                    <li>点击"开始录音"，大声朗读</li>
-                    <li>点击"停止录音"，查看详细评分和改进建议</li>
+                    <li>使用 <strong>Chrome</strong> 或 <strong>Edge</strong> 瀏覽器（需要 HTTPS 或 localhost）</li>
+                    <li>點擊詞彙卡片，聽標準發音</li>
+                    <li>點擊"開始錄音"，大聲朗讀</li>
+                    <li>點擊"停止錄音"，查看詳細評分和改進建議</li>
                 </ol>
             </div>
 
-            <div class="selected-word" id="selectedWord">请先选择一个词汇</div>
+            <div class="selected-word" id="selectedWord">請先選擇一個詞彙</div>
 
             <div class="controls">
-                <button class="btn btn-primary" id="playBtn" disabled>🔊 播放标准发音</button>
-                <button class="btn btn-success" id="recordBtn" disabled>🎤 开始录音</button>
-                <button class="btn btn-danger" id="stopBtn" disabled>⏹ 停止录音</button>
-                <button class="btn btn-warning" id="playbackBtn" disabled>▶️ 回放录音</button>
+                <button class="btn btn-primary" id="playBtn" disabled>🔊 播放標準發音</button>
+                <button class="btn btn-success" id="recordBtn" disabled>🎤 開始錄音</button>
+                <button class="btn btn-danger" id="stopBtn" disabled>⏹ 停止錄音</button>
+                <button class="btn btn-warning" id="playbackBtn" disabled>▶️ 回放錄音</button>
             </div>
 
             <div class="recording-indicator" id="recordingIndicator">
-                <div>🎙️ 正在录音中...</div>
-                <div style="margin-top: 10px;">请大声朗读：<span id="recordingWord"></span></div>
+                <div>🎙️ 正在錄音中...</div>
+                <div style="margin-top: 10px;">請大聲朗讀：<span id="recordingWord"></span></div>
             </div>
 
             <div class="score-display" id="scoreDisplay">
@@ -570,7 +830,7 @@
                 
                 <div class="feedback-details">
                     <div class="feedback-item">
-                        <span>🎯 准确度 (Accuracy)</span>
+                        <span>🎯 準確度 (Accuracy)</span>
                         <span class="feedback-score" id="accuracyScore" style="background: #dc3545;">0</span>
                     </div>
                     <div class="feedback-item">
@@ -582,46 +842,45 @@
                         <span class="feedback-score" id="completenessScore" style="background: #667eea;">0</span>
                     </div>
                     <div class="feedback-item">
-                        <span>📝 识别结果</span>
+                        <span>📝 識別結果</span>
                         <span id="recognizedText" style="color: #666;">-</span>
                     </div>
                 </div>
 
-                <!-- 文字反馈区域 -->
                 <div class="text-feedback" id="textFeedback">
-                    <h3>📋 发音反馈与建议</h3>
+                    <h3>📋 發音反饋與建議</h3>
                     
                     <div class="feedback-section" id="overallFeedback">
-                        <h4><span class="feedback-icon">📊</span> 整体评价</h4>
+                        <h4><span class="feedback-icon">📊</span> 整體評價</h4>
                         <div id="overallFeedbackContent"></div>
                     </div>
 
                     <div class="feedback-section" id="specificFeedback">
-                        <h4><span class="feedback-icon">🔍</span> 具体问题</h4>
+                        <h4><span class="feedback-icon">🔍</span> 具體問題</h4>
                         <div id="specificFeedbackContent"></div>
                     </div>
 
                     <div class="feedback-section" id="improvementTips">
-                        <h4><span class="feedback-icon">💡</span> 改进建议</h4>
+                        <h4><span class="feedback-icon">💡</span> 改進建議</h4>
                         <div class="improvement-tips" id="improvementTipsContent"></div>
                     </div>
 
                     <div class="pronunciation-guide" id="pronunciationGuide">
-                        <h4>📖 发音指南</h4>
+                        <h4>📖 發音指南</h4>
                         <div id="pronunciationGuideContent"></div>
                     </div>
                 </div>
             </div>
 
             <div class="debug-info" id="debugInfo">
-                <h4>🔧 调试信息</h4>
+                <h4>🔧 調試信息</h4>
                 <div id="debugContent"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // 全局变量
+        // 全局變量
         let selectedWord = '';
         let mediaRecorder = null;
         let audioChunks = [];
@@ -657,43 +916,43 @@
         const improvementTipsContent = document.getElementById('improvementTipsContent');
         const pronunciationGuideContent = document.getElementById('pronunciationGuideContent');
 
-        // 词汇发音指南数据
+        // 詞彙發音指南數據
         const pronunciationData = {
             "Good morning": {
-                phonetic: "/ɡʊd ˈmɔːrnŋ/",
-                syllables: ["Good", "mor"],
+                phonetic: "/ɡʊd ˈmɔːrnɪŋ/",
+                syllables: ["Good", "mor", "ning"],
                 stressed: [1],
-                tips: ["注意 'mor' 音节要重读", "'Good' 的 'd' 要轻读"]
+                tips: ["注意 'mor' 音節要重讀", "'Good' 的 'd' 要輕讀"]
             },
             "Good afternoon": {
-                phonetic: "/ɡʊd ˌæftərˈnuːn/",
+                phonetic: "/ɡʊd ˌɑːftərˈnuːn/",
                 syllables: ["Good", "af", "ter", "noon"],
                 stressed: [3],
-                tips: ["重音在 'noon' 上", "'after' 要连读"]
+                tips: ["重音在 'noon' 上", "'after' 要連讀"]
             },
             "Goodbye": {
-                phonetic: "/ɡʊdbaɪ/",
+                phonetic: "/ɡʊdˈbaɪ/",
                 syllables: ["Good", "bye"],
                 stressed: [1],
-                tips: ["两个词要连起来读", "'bye' 的音要拉长"]
+                tips: ["兩個詞要連起來讀", "'bye' 的音要拉長"]
             },
             "a classmate": {
-                phonetic: "/ə ˈklæsmeɪt/",
+                phonetic: "/ə ˈklɑːsmeɪt/",
                 syllables: ["a", "class", "mate"],
                 stressed: [1],
-                tips: ["'a' 要轻读", "重音在 'class' 上"]
+                tips: ["'a' 要輕讀", "重音在 'class' 上"]
             },
             "a monitor": {
                 phonetic: "/ə ˈmɒnɪtər/",
                 syllables: ["a", "mon", "i", "tor"],
                 stressed: [1],
-                tips: ["重音在 'mon' 上", "'tor' 要轻读"]
+                tips: ["重音在 'mon' 上", "'tor' 要輕讀"]
             },
             "a teacher": {
                 phonetic: "/ə ˈtiːtʃər/",
                 syllables: ["a", "tea", "cher"],
                 stressed: [1],
-                tips: ["'tea' 的音要拉长", "'cher' 要轻读"]
+                tips: ["'tea' 的音要拉長", "'cher' 要輕讀"]
             },
             "a monitress": {
                 phonetic: "/ə ˈmɒnɪtrəs/",
@@ -703,7 +962,7 @@
             }
         };
 
-        // 调试日志
+        // 調試日誌
         function log(message, type = 'info') {
             const time = new Date().toLocaleTimeString();
             const div = document.createElement('div');
@@ -713,7 +972,7 @@
             console.log(`[${type.toUpperCase()}]`, message);
         }
 
-        // 显示错误
+        // 顯示錯誤
         function showError(message) {
             errorMessage.textContent = message;
             errorMessage.classList.add('show');
@@ -723,18 +982,18 @@
             }, 5000);
         }
 
-        // 检测浏览器兼容性
+        // 檢測瀏覽器兼容性
         function checkBrowserCompatibility() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const hasMediaRecorder = typeof MediaRecorder !== 'undefined';
             const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
             const isHTTPS = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
 
-            log(`浏览器：${navigator.userAgent}`, 'info');
+            log(`瀏覽器：${navigator.userAgent}`, 'info');
             log(`Speech Recognition: ${SpeechRecognition ? '✓ 支持' : '✗ 不支持'}`, SpeechRecognition ? 'ok' : 'error');
             log(`MediaRecorder: ${hasMediaRecorder ? '✓ 支持' : '✗ 不支持'}`, hasMediaRecorder ? 'ok' : 'error');
             log(`getUserMedia: ${hasGetUserMedia ? '✓ 支持' : '✗ 不支持'}`, hasGetUserMedia ? 'ok' : 'error');
-            log(`HTTPS 环境：${isHTTPS ? '✓ 是' : '✗ 否 (可能影响功能)'}`, isHTTPS ? 'ok' : 'warning');
+            log(`HTTPS 環境：${isHTTPS ? '✓ 是' : '✗ 否 (可能影響功能)'}`, isHTTPS ? 'ok' : 'warning');
 
             if (!SpeechRecognition || !hasMediaRecorder || !hasGetUserMedia) {
                 browserWarning.classList.add('show');
@@ -743,7 +1002,7 @@
             return true;
         }
 
-        // 初始化语音合成
+        // 初始化語音合成
         const synth = window.speechSynthesis;
         let britishVoice = null;
 
@@ -751,7 +1010,7 @@
             const voices = synth.getVoices();
             britishVoice = voices.find(voice => voice.lang === 'en-GB') || 
                           voices.find(voice => voice.lang.startsWith('en'));
-            log(`加载语音合成：找到 ${voices.length} 个语音，英式语音：${britishVoice ? '✓' : '✗'}`, 'info');
+            log(`加載語音合成：找到 ${voices.length} 個語音，英式語音：${britishVoice ? '✓' : '✗'}`, 'info');
         }
 
         if (speechSynthesis.onvoiceschanged !== undefined) {
@@ -759,11 +1018,11 @@
         }
         loadVoices();
 
-        // 初始化语音识别
+        // 初始化語音識別
         function initSpeechRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                log('浏览器不支持 Speech Recognition API', 'error');
+                log('瀏覽器不支持 Speech Recognition API', 'error');
                 return;
             }
 
@@ -774,7 +1033,7 @@
             recognition.maxAlternatives = 1;
 
             recognition.onstart = () => {
-                log('语音识别开始', 'ok');
+                log('語音識別開始', 'ok');
             };
 
             recognition.onresult = (event) => {
@@ -782,7 +1041,7 @@
                 for (let i = event.resultIndex; i < event.results.length; i++) {
                     const transcript = event.results[i][0].transcript;
                     const confidence = event.results[i][0].confidence;
-                    log(`识别结果："${transcript}" (置信度：${(confidence * 100).toFixed(0)}%)`, 'info');
+                    log(`識別結果："${transcript}" (置信度：${(confidence * 100).toFixed(0)}%)`, 'info');
                     if (event.results[i].isFinal) {
                         finalTranscript += transcript;
                     }
@@ -790,24 +1049,24 @@
             };
 
             recognition.onerror = (event) => {
-                log(`语音识别错误：${event.error}`, 'error');
+                log(`語音識別錯誤：${event.error}`, 'error');
                 if (event.error === 'no-speech') {
-                    showError('未检测到语音，请确保麦克风正常工作并大声朗读');
+                    showError('未檢測到語音，請確保麥克風正常工作並大聲朗讀');
                 } else if (event.error === 'audio-capture') {
-                    showError('未找到麦克风，请检查麦克风权限');
+                    showError('未找到麥克風，請檢查麥克風權限');
                 } else if (event.error === 'not-allowed') {
-                    showError('麦克风权限被拒绝，请在浏览器设置中授予权限');
+                    showError('麥克風權限被拒絕，請在瀏覽器設置中授予權限');
                 }
             };
 
             recognition.onend = () => {
-                log('语音识别结束', 'info');
+                log('語音識別結束', 'info');
             };
 
-            log('语音识别初始化成功', 'ok');
+            log('語音識別初始化成功', 'ok');
         }
 
-        // 词汇卡片点击事件
+        // 詞彙卡片點擊事件
         document.querySelectorAll('.vocab-card').forEach(card => {
             card.addEventListener('click', () => {
                 document.querySelectorAll('.vocab-card').forEach(c => c.classList.remove('active'));
@@ -824,11 +1083,11 @@
                 stopPlayback();
                 playPronunciation(selectedWord);
                 
-                log(`选择词汇：${selectedWord}`, 'info');
+                log(`選擇詞彙：${selectedWord}`, 'info');
             });
         });
 
-        // 播放标准发音
+        // 播放標準發音
         function playPronunciation(text) {
             if (synth.speaking) {
                 synth.cancel();
@@ -842,8 +1101,8 @@
             utterance.rate = 0.8;
             utterance.pitch = 1;
             
-            utterance.onstart = () => log('播放标准发音', 'info');
-            utterance.onerror = (e) => log(`语音合成错误：${e.error}`, 'error');
+            utterance.onstart = () => log('播放標準發音', 'info');
+            utterance.onerror = (e) => log(`語音合成錯誤：${e.error}`, 'error');
             
             synth.speak(utterance);
         }
@@ -854,9 +1113,9 @@
             }
         });
 
-        // 开始录音
+        // 開始錄音
         async function startRecording() {
-            log('开始录音...', 'info');
+            log('開始錄音...', 'info');
             finalTranscript = '';
             
             try {
@@ -870,7 +1129,7 @@
                     } 
                 });
                 
-                log('获得麦克风权限', 'ok');
+                log('獲得麥克風權限', 'ok');
                 
                 mediaRecorder = new MediaRecorder(stream, {
                     mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
@@ -883,12 +1142,12 @@
                 mediaRecorder.ondataavailable = (event) => {
                     if (event.data.size > 0) {
                         audioChunks.push(event.data);
-                        log(`录音数据：${event.data.size} bytes`, 'info');
+                        log(`錄音數據：${event.data.size} bytes`, 'info');
                     }
                 };
                 
                 mediaRecorder.onstop = () => {
-                    log('录音停止，处理数据...', 'info');
+                    log('錄音停止，處理數據...', 'info');
                     recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                     
                     const audioUrl = URL.createObjectURL(recordedAudioBlob);
@@ -899,9 +1158,9 @@
                     playbackAudio = new Audio(audioUrl);
                     playbackBtn.disabled = false;
                     
-                    log(`录音完成：${recordedAudioBlob.size} bytes`, 'ok');
+                    log(`錄音完成：${recordedAudioBlob.size} bytes`, 'ok');
                     
-                    // 自动回放
+                    // 自動回放
                     setTimeout(() => {
                         playRecording();
                     }, 500);
@@ -913,9 +1172,9 @@
                 if (recognition) {
                     try {
                         recognition.start();
-                        log('语音识别已启动', 'ok');
+                        log('語音識別已啟動', 'ok');
                     } catch (e) {
-                        log(`启动语音识别失败：${e.message}`, 'error');
+                        log(`啟動語音識別失敗：${e.message}`, 'error');
                     }
                 }
                 
@@ -928,21 +1187,21 @@
                 playbackBtn.disabled = true;
                 
             } catch (err) {
-                log(`录音错误：${err.message}`, 'error');
+                log(`錄音錯誤：${err.message}`, 'error');
                 if (err.name === 'NotAllowedError') {
-                    showError('麦克风权限被拒绝。请在浏览器设置中授予麦克风权限。');
+                    showError('麥克風權限被拒絕。請在瀏覽器設置中授予麥克風權限。');
                 } else if (err.name === 'NotFoundError') {
-                    showError('未找到麦克风设备。请确保已连接麦克风。');
+                    showError('未找到麥克風設備。請確保已連接麥克風。');
                 } else {
-                    showError(`录音失败：${err.message}`);
+                    showError(`錄音失敗：${err.message}`);
                 }
             }
         }
 
-        // 停止录音
+        // 停止錄音
         function stopRecording() {
             if (mediaRecorder && isRecording) {
-                log('用户停止录音', 'info');
+                log('用戶停止錄音', 'info');
                 mediaRecorder.stop();
                 isRecording = false;
                 
@@ -950,7 +1209,7 @@
                     try {
                         recognition.stop();
                     } catch (e) {
-                        log(`停止语音识别失败：${e.message}`, 'error');
+                        log(`停止語音識別失敗：${e.message}`, 'error');
                     }
                 }
                 
@@ -962,7 +1221,7 @@
                 recordBtn.disabled = false;
                 stopBtn.disabled = true;
                 
-                // 评估发音
+                // 評估發音
                 setTimeout(() => {
                     evaluatePronunciation();
                 }, 1000);
@@ -972,29 +1231,29 @@
         recordBtn.addEventListener('click', startRecording);
         stopBtn.addEventListener('click', stopRecording);
 
-        // 回放录音
+        // 回放錄音
         function playRecording() {
             if (!playbackAudio) {
-                log('没有可播放的录音', 'error');
+                log('沒有可播放的錄音', 'error');
                 return;
             }
             
             isPlaying = true;
-            playbackBtn.innerHTML = '⏸ 暂停回放';
-            log('开始回放录音', 'info');
+            playbackBtn.innerHTML = '⏸ 暫停回放';
+            log('開始回放錄音', 'info');
             
             playbackAudio.play()
                 .then(() => {
                     log('回放成功', 'ok');
                 })
                 .catch(err => {
-                    log(`回放失败：${err.message}`, 'error');
-                    showError(`无法播放录音：${err.message}`);
+                    log(`回放失敗：${err.message}`, 'error');
+                    showError(`無法播放錄音：${err.message}`);
                     resetPlaybackUI();
                 });
             
             playbackAudio.onended = () => {
-                log('回放结束', 'info');
+                log('回放結束', 'info');
                 resetPlaybackUI();
             };
         }
@@ -1003,8 +1262,8 @@
             if (playbackAudio) {
                 playbackAudio.pause();
                 isPlaying = false;
-                playbackBtn.innerHTML = '▶️ 继续回放';
-                log('暂停回放', 'info');
+                playbackBtn.innerHTML = '▶️ 繼續回放';
+                log('暫停回放', 'info');
             }
         }
 
@@ -1019,7 +1278,7 @@
 
         function resetPlaybackUI() {
             isPlaying = false;
-            playbackBtn.innerHTML = '▶️ 回放录音';
+            playbackBtn.innerHTML = '▶️ 回放錄音';
         }
 
         playbackBtn.addEventListener('click', () => {
@@ -1030,22 +1289,22 @@
             }
         });
 
-        // 评估发音
+        // 評估發音
         function evaluatePronunciation() {
-            log('开始评估发音', 'info');
+            log('開始評估發音', 'info');
             
             const scores = calculateScores();
             displayScores(scores);
             displayTextFeedback(scores);
             
-            log(`评分结果 - 总分：${scores.overall}, 准确度：${scores.accuracy}, 流利度：${scores.fluency}, 完整度：${scores.completeness}`, 'info');
+            log(`評分結果 - 總分：${scores.overall}, 準確度：${scores.accuracy}, 流利度：${scores.fluency}, 完整度：${scores.completeness}`, 'info');
         }
 
         function calculateScores() {
             const targetText = selectedWord.toLowerCase().trim();
             const recognized = finalTranscript.toLowerCase().trim();
             
-            log(`目标文本："${targetText}", 识别文本："${recognized}"`, 'info');
+            log(`目標文本："${targetText}", 識別文本："${recognized}"`, 'info');
             
             let similarity = 0;
             if (recognized) {
@@ -1062,7 +1321,7 @@
                 accuracy,
                 fluency,
                 completeness,
-                recognizedText: recognized || '(未识别到语音)',
+                recognizedText: recognized || '(未識別到語音)',
                 targetText,
                 similarity
             };
@@ -1126,9 +1385,9 @@
             } else if (scores.overall >= 70) {
                 message = '👍 Good job! 做得好！';
             } else if (scores.overall >= 50) {
-                message = '💪 Keep practicing! 继续努力！';
+                message = '💪 Keep practicing! 繼續努力！';
             } else {
-                message = '📚 More practice needed! 多加练习！';
+                message = '📚 More practice needed! 多加練習！';
             }
             
             scoreMessage.textContent = message;
@@ -1141,78 +1400,78 @@
             accuracyScoreEl.style.background = scores.accuracy >= 70 ? '#28a745' : '#dc3545';
         }
 
-        // 显示文字反馈
+        // 顯示文字反饋
         function displayTextFeedback(scores) {
             textFeedback.style.display = 'block';
             
-            // 整体评价
+            // 整體評價
             let overallHTML = '';
             if (scores.overall >= 90) {
                 overallHTML = `
                     <div class="feedback-success">
-                        <strong>🎉 表现优秀！</strong><br>
-                        您的发音非常标准，几乎完美！继续保持！
+                        <strong>🎉 表現優秀！</strong><br>
+                        您的發音非常標準，幾乎完美！繼續保持！
                     </div>
                 `;
             } else if (scores.overall >= 70) {
                 overallHTML = `
                     <div class="feedback-success">
-                        <strong>👍 表现良好！</strong><br>
-                        您的发音不错，但还有一些小地方可以改进。
+                        <strong>👍 表現良好！</strong><br>
+                        您的發音不錯，但還有一些小地方可以改進。
                     </div>
                 `;
             } else if (scores.overall >= 50) {
                 overallHTML = `
                     <div class="feedback-warning">
                         <strong>💪 需要努力！</strong><br>
-                        您的发音有一些问题，但别灰心，多练习就会进步！
+                        您的發音有一些問題，但別灰心，多練習就會進步！
                     </div>
                 `;
             } else {
                 overallHTML = `
                     <div class="feedback-warning">
-                        <strong>📚 需要多加练习！</strong><br>
-                        建议您多听标准发音，跟着模仿练习。
+                        <strong>📚 需要多加練習！</strong><br>
+                        建議您多聽標準發音，跟著模仿練習。
                     </div>
                 `;
             }
             overallFeedbackContent.innerHTML = overallHTML;
             
-            // 具体问题
+            // 具體問題
             let specificHTML = '<ul>';
             
             if (scores.accuracy < 50) {
-                specificHTML += `<li>❌ <strong>准确度较低</strong>：您的发音与标准发音差异较大，可能是某些音节读错了。</li>`;
+                specificHTML += `<li>❌ <strong>準確度較低</strong>：您的發音與標準發音差異較大，可能是某些音節讀錯了。</li>`;
             } else if (scores.accuracy < 70) {
-                specificHTML += `<li>⚠️ <strong>准确度一般</strong>：部分音节发音不够准确，需要注意细节。</li>`;
+                specificHTML += `<li>⚠️ <strong>準確度一般</strong>：部分音節發音不夠準確，需要注意細節。</li>`;
             } else {
-                specificHTML += `<li>✅ <strong>准确度良好</strong>：发音基本准确，继续保持！</li>`;
+                specificHTML += `<li>✅ <strong>準確度良好</strong>：發音基本準確，繼續保持！</li>`;
             }
             
             if (scores.fluency < 60) {
-                specificHTML += `<li>❌ <strong>流利度不足</strong>：说话时有较多停顿，建议多练习连贯性。</li>`;
+                specificHTML += `<li>❌ <strong>流利度不足</strong>：說話時有較多停頓，建議多練習連貫性。</li>`;
             } else if (scores.fluency < 80) {
-                specificHTML += `<li>⚠️ <strong>流利度一般</strong>：有一些小停顿，可以尝试说得更流畅。</li>`;
+                specificHTML += `<li>⚠️ <strong>流利度一般</strong>：有一些小停頓，可以嘗試說得更流暢。</li>`;
             } else {
-                specificHTML += `<li>✅ <strong>流利度良好</strong>：说话流畅自然，很好！</li>`;
+                specificHTML += `<li>✅ <strong>流利度良好</strong>：說話流暢自然，很好！</li>`;
             }
             
             if (scores.completeness < 60) {
-                specificHTML += `<li>❌ <strong>完整度不足</strong>：可能没有说完整个词，请确保完整读出。</li>`;
+                specificHTML += `<li>❌ <strong>完整度不足</strong>：可能沒有說完整個詞，請確保完整讀出。</li>`;
             } else if (scores.completeness < 80) {
-                specificHTML += `<li>⚠️ <strong>完整度一般</strong>：部分音节可能没有读清楚。</li>`;
+                specificHTML += `<li>⚠️ <strong>完整度一般</strong>：部分音節可能沒有讀清楚。</li>`;
             } else {
-                specificHTML += `<li>✅ <strong>完整度良好</strong>：完整读出了整个词，很好！</li>`;
+                specificHTML += `<li>✅ <strong>完整度良好</strong>：完整讀出了整個詞，很好！</li>`;
             }
             
             if (!finalTranscript.trim()) {
-                specificHTML += `<li>⚠️ <strong>未识别到语音</strong>：可能是音量太小或没有说话，请确保麦克风正常工作并大声朗读。</li>`;
+                specificHTML += `<li>⚠️ <strong>未識別到語音</strong>：可能是音量太小或沒有說話，請確保麥克風正常工作並大聲朗讀。</li>`;
             }
             
             specificHTML += '</ul>';
             specificFeedbackContent.innerHTML = specificHTML;
             
-            // 改进建议
+            // 改進建議
             let tipsHTML = '';
             const tips = generateImprovementTips(scores);
             
@@ -1227,13 +1486,13 @@
             
             improvementTipsContent.innerHTML = tipsHTML;
             
-            // 发音指南
+            // 發音指南
             const pronData = pronunciationData[selectedWord];
             if (pronData) {
                 let syllableHTML = '<div class="syllable-breakdown">';
                 pronData.syllables.forEach((syllable, index) => {
                     const isStressed = pronData.stressed.includes(index + 1);
-                    syllableHTML += `<span class="syllable ${isStressed ? 'stressed' : ''}">${syllable}${isStressed ? '′' : ''}</span>`;
+                    syllableHTML += `<span class="syllable-item ${isStressed ? 'stressed' : ''}">${syllable}${isStressed ? '′' : ''}</span>`;
                 });
                 syllableHTML += '</div>';
                 
@@ -1249,19 +1508,19 @@
                     <div style="margin-top: 10px;">${tipsListHTML}</div>
                 `;
             } else {
-                pronunciationGuideContent.innerHTML = '<p>发音指南数据加载中...</p>';
+                pronunciationGuideContent.innerHTML = '<p>發音指南數據加載中...</p>';
             }
         }
 
-        // 生成改进建议
+        // 生成改進建議
         function generateImprovementTips(scores) {
             const tips = [];
             
             if (scores.accuracy < 70) {
                 tips.push({
                     icon: '🎯',
-                    title: '提高准确度',
-                    content: '多听标准发音，注意每个音节的发音。可以放慢速度，逐个音节练习。'
+                    title: '提高準確度',
+                    content: '多聽標準發音，注意每個音節的發音。可以放慢速度，逐個音節練習。'
                 });
             }
             
@@ -1269,7 +1528,7 @@
                 tips.push({
                     icon: '💬',
                     title: '提高流利度',
-                    content: '练习时不要停顿太多，可以尝试先慢后快，逐渐提高速度。'
+                    content: '練習時不要停頓太多，可以嘗試先慢後快，逐漸提高速度。'
                 });
             }
             
@@ -1277,23 +1536,23 @@
                 tips.push({
                     icon: '✅',
                     title: '提高完整度',
-                    content: '确保读出整个词，不要漏掉任何音节。可以先分解练习，再连起来。'
+                    content: '確保讀出整個詞，不要漏掉任何音節。可以先分解練習，再連起來。'
                 });
             }
             
             if (scores.overall >= 70) {
                 tips.push({
                     icon: '🌟',
-                    title: '保持优秀',
-                    content: '您的表现很好！可以尝试挑战更快的语速或更复杂的句子。'
+                    title: '保持優秀',
+                    content: '您的表現很好！可以嘗試挑戰更快的語速或更複雜的句子。'
                 });
             }
             
             if (tips.length === 0) {
                 tips.push({
                     icon: '🎉',
-                    title: '完美表现',
-                    content: '太棒了！您的发音几乎完美，可以尝试教其他同学了！'
+                    title: '完美表現',
+                    content: '太棒了！您的發音幾乎完美，可以嘗試教其他同學了！'
                 });
             }
             
@@ -1302,7 +1561,7 @@
 
         // 初始化
         window.addEventListener('load', () => {
-            log('页面加载完成', 'ok');
+            log('頁面加載完成', 'ok');
             checkBrowserCompatibility();
             initSpeechRecognition();
         });
