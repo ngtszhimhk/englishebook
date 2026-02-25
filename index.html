@@ -201,6 +201,11 @@
             color: white;
         }
 
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
         .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
@@ -379,6 +384,17 @@
             margin: 8px 0;
         }
 
+        .playing-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            animation: bounce 0.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
         @media (max-width: 600px) {
             .header h1 {
                 font-size: 1.8em;
@@ -472,7 +488,8 @@
                 <ol>
                     <li>点击上方的词汇卡片，聆听标准英式发音</li>
                     <li>点击"开始录音"按钮，跟着朗读</li>
-                    <li>说完后点击"停止录音"，系统会自动评分</li>
+                    <li>说完后点击"停止录音"，系统会自动评分并回放您的录音</li>
+                    <li>您可以随时点击"回放录音"再次听取</li>
                     <li>查看评分和反馈，不断改进！</li>
                 </ol>
             </div>
@@ -484,7 +501,7 @@
             <div class="controls">
                 <button class="btn btn-primary" id="playBtn" disabled>
                     <span>🔊</span>
-                    <span>播放发音</span>
+                    <span>播放标准发音</span>
                 </button>
                 <button class="btn btn-success" id="recordBtn" disabled>
                     <span>🎤</span>
@@ -493,6 +510,11 @@
                 <button class="btn btn-danger" id="stopBtn" disabled>
                     <span>⏹</span>
                     <span>停止录音</span>
+                </button>
+                <button class="btn btn-warning" id="playbackBtn" disabled>
+                    <span>▶️</span>
+                    <span>回放录音</span>
+                    <span class="playing-indicator" id="playingIndicator" style="display: none;">🔊</span>
                 </button>
             </div>
 
@@ -543,6 +565,9 @@
         let analyser = null;
         let dataArray = null;
         let source = null;
+        let recordedAudioBlob = null;
+        let playbackAudio = null;
+        let isPlaying = false;
 
         // DOM Elements
         const vocabCards = document.querySelectorAll('.vocab-card');
@@ -550,6 +575,8 @@
         const playBtn = document.getElementById('playBtn');
         const recordBtn = document.getElementById('recordBtn');
         const stopBtn = document.getElementById('stopBtn');
+        const playbackBtn = document.getElementById('playbackBtn');
+        const playingIndicator = document.getElementById('playingIndicator');
         const recordingIndicator = document.getElementById('recordingIndicator');
         const recordingWordEl = document.getElementById('recordingWord');
         const scoreDisplay = document.getElementById('scoreDisplay');
@@ -612,8 +639,12 @@
                 playBtn.disabled = false;
                 recordBtn.disabled = false;
                 
-                // Hide score display
+                // Hide score display and disable playback
                 scoreDisplay.classList.remove('active');
+                playbackBtn.disabled = true;
+                
+                // Stop any playing audio
+                stopPlayback();
                 
                 // Play pronunciation
                 playPronunciation(selectedWord);
@@ -650,6 +681,9 @@
         // Stop button click
         stopBtn.addEventListener('click', stopRecording);
 
+        // Playback button click
+        playbackBtn.addEventListener('click', togglePlayback);
+
         // Start recording
         async function startRecording() {
             if (!selectedWord) {
@@ -658,6 +692,9 @@
             }
 
             try {
+                // Stop any playing audio
+                stopPlayback();
+                
                 // Request microphone access
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 
@@ -674,10 +711,31 @@
                 audioChunks = [];
                 
                 mediaRecorder.ondataavailable = (event) => {
-                    audioChunks.push(event.data);
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
                 };
                 
-                mediaRecorder.onstop = evaluatePronunciation;
+                mediaRecorder.onstop = () => {
+                    // Create blob from recorded audio
+                    recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    
+                    // Create audio element for playback
+                    const audioUrl = URL.createObjectURL(recordedAudioBlob);
+                    if (playbackAudio) {
+                        playbackAudio.pause();
+                        URL.revokeObjectURL(playbackAudio.src);
+                    }
+                    playbackAudio = new Audio(audioUrl);
+                    
+                    // Enable playback button
+                    playbackBtn.disabled = false;
+                    
+                    // Auto playback after recording stops
+                    setTimeout(() => {
+                        playRecording();
+                    }, 500);
+                };
                 
                 // Start recording
                 mediaRecorder.start();
@@ -695,6 +753,7 @@
                 
                 recordBtn.disabled = true;
                 stopBtn.disabled = false;
+                playbackBtn.disabled = true;
                 
                 // Animate wave
                 animateWave();
@@ -724,7 +783,64 @@
                 recordingIndicator.classList.remove('active');
                 recordBtn.disabled = false;
                 stopBtn.disabled = true;
+                
+                // Evaluate pronunciation
+                evaluatePronunciation();
             }
+        }
+
+        // Toggle playback (play/pause)
+        function togglePlayback() {
+            if (!playbackAudio) return;
+            
+            if (isPlaying) {
+                pausePlayback();
+            } else {
+                playRecording();
+            }
+        }
+
+        // Play recording
+        function playRecording() {
+            if (!playbackAudio) return;
+            
+            isPlaying = true;
+            playingIndicator.style.display = 'inline-block';
+            playbackBtn.innerHTML = '<span>⏸</span><span>暂停回放</span><span class="playing-indicator" id="playingIndicator">🔊</span>';
+            
+            playbackAudio.play();
+            
+            playbackAudio.onended = () => {
+                resetPlaybackUI();
+            };
+        }
+
+        // Pause playback
+        function pausePlayback() {
+            if (!playbackAudio) return;
+            
+            isPlaying = false;
+            playingIndicator.style.display = 'none';
+            playbackBtn.innerHTML = '<span>▶️</span><span>继续回放</span><span class="playing-indicator" id="playingIndicator" style="display: none;">🔊</span>';
+            
+            playbackAudio.pause();
+        }
+
+        // Stop playback
+        function stopPlayback() {
+            if (playbackAudio) {
+                playbackAudio.pause();
+                playbackAudio.currentTime = 0;
+            }
+            isPlaying = false;
+            resetPlaybackUI();
+        }
+
+        // Reset playback UI
+        function resetPlaybackUI() {
+            isPlaying = false;
+            playingIndicator.style.display = 'none';
+            playbackBtn.innerHTML = '<span>▶️</span><span>回放录音</span><span class="playing-indicator" id="playingIndicator" style="display: none;">🔊</span>';
         }
 
         // Animate recording wave
@@ -950,6 +1066,10 @@
             }
             if (synth) {
                 synth.cancel();
+            }
+            stopPlayback();
+            if (playbackAudio && playbackAudio.src) {
+                URL.revokeObjectURL(playbackAudio.src);
             }
         });
     </script>
