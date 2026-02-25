@@ -3,35 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>互動英語電子書</title>
+    <title>AI 自動評分英語電子書</title>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .word-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; width: 100%; max-width: 800px; }
-        .word-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: center; }
-        .word-text { font-size: 28px; font-weight: bold; margin-bottom: 15px; cursor: pointer; color: #2d3436; }
-        .word-text:hover { color: #0984e3; }
-        button { margin: 5px; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; transition: 0.3s; }
-        .btn-record { background: #ff7675; color: white; }
-        .btn-stop { background: #636e72; color: white; display: none; }
-        .btn-play { background: #55efc4; color: #2d3436; display: none; font-weight: bold; }
-        .status-dot { height: 10px; width: 10px; background-color: #bbb; border-radius: 50%; display: inline-block; margin-right: 5px; }
-        .recording .status-dot { background-color: #ff4757; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
+        body { font-family: 'PingFang HK', sans-serif; background: #f8fafc; display: flex; flex-direction: column; align-items: center; padding: 20px; color: #1e293b; }
+        .word-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; max-width: 900px; }
+        .word-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center; border: 3px solid #e2e8f0; transition: all 0.3s ease; }
+        .word-card.recording { border-color: #3b82f6; background: #eff6ff; transform: scale(1.02); }
+        .word-card.correct { border-color: #22c55e; background: #f0fdf4; }
+        .word-card.wrong { border-color: #ef4444; background: #fef2f2; }
+        .word-text { font-size: 36px; font-weight: 800; margin-bottom: 8px; color: #0f172a; cursor: pointer; }
+        .word-text:hover { color: #3b82f6; }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; margin-bottom: 15px; background: #f1f5f9; }
+        .score-box { font-size: 18px; font-weight: bold; margin: 10px 0; min-height: 27px; }
+        .suggestion { font-size: 14px; color: #64748b; line-height: 1.5; min-height: 42px; }
+        button { margin-top: 15px; padding: 12px 24px; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.2s; width: 100%; }
+        .btn-start { background: #3b82f6; color: white; }
+        .btn-start:disabled { background: #94a3b8; cursor: not-allowed; }
+        .pulse { animation: pulse-red 1.5s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
     </style>
 </head>
 <body>
 
-    <h1>🇬🇧 英語發音與錄音練習</h1>
-    <p>1. 點擊單字聽英式發音 | 2. 按錄音開始練習 | 3. 按停止後點播放</p>
+    <h1 style="margin-bottom: 5px;">🎓 AI 發音自動評分</h1>
+    <p style="color: #64748b; margin-bottom: 30px;">聽示範音後，按按鈕並朗讀，系統會自動評分</p>
 
     <div class="word-grid" id="grid"></div>
 
     <script>
-        // 你的 7 個詞語
         const words = ["Apple", "Banana", "Cherry", "Dragonfruit", "Elderberry", "Fig", "Grape"];
-        let mediaRecorder;
-        let audioChunks = [];
-        let audioUrls = {}; // 儲存每個單字的錄音網址
+        
+        // 設定語音辨識
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-GB';
+        recognition.continuous = false; // 說完自動停止
+        recognition.interimResults = false;
 
         const grid = document.getElementById('grid');
 
@@ -41,10 +48,10 @@
             card.id = `card-${index}`;
             card.innerHTML = `
                 <div class="word-text" onclick="speak('${word}')">${word} 🔊</div>
-                <div id="status-${index}"><span class="status-dot"></span>待命</div>
-                <button class="btn-record" id="rec-${index}" onclick="startRecording(${index})">🎤 開始錄音</button>
-                <button class="btn-stop" id="stop-${index}" onclick="stopRecording(${index})">⏹ 停止</button>
-                <button class="btn-play" id="play-${index}" onclick="playRecording(${index})">▶️ 聽回我的聲音</button>
+                <div class="status-badge" id="status-${index}">待命中</div>
+                <div class="score-box" id="score-${index}"></div>
+                <div class="suggestion" id="suggest-${index}">點擊單字聽英式讀音</div>
+                <button class="btn-start" id="btn-${index}" onclick="runAI(${index}, '${word}')">🎤 開始錄音評分</button>
             `;
             grid.appendChild(card);
         });
@@ -55,51 +62,53 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        async function startRecording(index) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
+        function runAI(index, target) {
+            const btn = document.getElementById(`btn-${index}`);
+            const card = document.getElementById(`card-${index}`);
+            const status = document.getElementById(`status-${index}`);
+            const score = document.getElementById(`score-${index}`);
+            const suggest = document.getElementById(`suggest-${index}`);
 
-                mediaRecorder.ondataavailable = e => {
-                    if (e.data.size > 0) audioChunks.push(e.data);
-                };
+            // 重置介面
+            card.className = 'word-card recording pulse';
+            status.innerText = "🔴 正在聆聽...";
+            score.innerText = "";
+            suggest.innerText = "請大聲朗讀單字...";
+            btn.disabled = true;
 
-                mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    if (audioUrls[index]) URL.revokeObjectURL(audioUrls[index]); // 釋放舊記憶體
-                    audioUrls[index] = URL.createObjectURL(audioBlob);
-                    document.getElementById(`play-${index}`).style.display = 'inline-block';
-                    document.getElementById(`status-${index}`).innerHTML = '<span class="status-dot" style="background:#55efc4"></span>錄音已就緒';
-                };
+            recognition.start();
 
-                mediaRecorder.start();
-                document.getElementById(`card-${index}`).classList.add('recording');
-                document.getElementById(`rec-${index}`).style.display = 'none';
-                document.getElementById(`stop-${index}`).style.display = 'inline-block';
-                document.getElementById(`status-${index}`).innerHTML = '<span class="status-dot"></span>錄音中...';
-            } catch (err) {
-                alert("無法開啟麥克風，請檢查瀏覽器權限設定！");
-            }
+            recognition.onresult = (event) => {
+                const result = event.results[0][0].transcript.toLowerCase().trim().replace(/[.,!]/g, "");
+                const targetLower = target.toLowerCase();
+
+                if (result === targetLower) {
+                    card.className = 'word-card correct';
+                    status.innerText = "✅ 辨識完成";
+                    score.innerText = "💯 評分：完美！";
+                    score.style.color = "#16a34a";
+                    suggest.innerText = "你的發音非常標準，請繼續保持。";
+                } else {
+                    card.className = 'word-card wrong';
+                    status.innerText = "❌ 辨識完成";
+                    score.innerText = "📉 評分：需要改進";
+                    score.style.color = "#dc2626";
+                    suggest.innerText = `你說了 "${result}"。建議：多聽幾次示範音，注意重音位置。`;
+                }
+            };
+
+            recognition.onspeechend = () => {
+                recognition.stop();
+                btn.disabled = false;
+                btn.innerText = "🔄 重新評分";
+            };
+
+            recognition.onerror = (event) => {
+                recognition.stop();
+                btn.disabled = false;
+                card.className = 'word-card';
+                status.innerText = "⚠️ 出錯了";
+                suggest.innerText = "沒聽清楚，請再試一次（記得允許麥克風權限）。";
+            };
         }
-
-        function stopRecording(index) {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-                // 停止所有麥克風軌道以節省電力
-                mediaRecorder.stream.getTracks().forEach(track => track.stop());
-                document.getElementById(`card-${index}`).classList.remove('recording');
-                document.getElementById(`stop-${index}`).style.display = 'none';
-                document.getElementById(`rec-${index}`).style.display = 'inline-block';
-            }
-        }
-
-        function playRecording(index) {
-            if (audioUrls[index]) {
-                const audio = new Audio(audioUrls[index]);
-                audio.play();
-            }
-        }
-    </script>
-</body>
-</html>
+    </
