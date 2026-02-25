@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unit 1 Vocabulary - Interactive E-Book</title>
+    <title>Unit 1 Vocabulary - 语音练习（增强版）</title>
     <style>
         * {
             margin: 0;
@@ -39,18 +39,63 @@
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
-        .header .unit-badge {
-            display: inline-block;
-            background: white;
-            color: #f5576c;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 1.1em;
+        .browser-warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+            color: #856404;
         }
+
+        .browser-warning.show {
+            display: block;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+            color: #721c24;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 0.9em;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .debug-info h4 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .debug-item {
+            margin: 5px 0;
+            padding: 5px;
+            background: white;
+            border-radius: 3px;
+        }
+
+        .status-ok { color: #28a745; }
+        .status-error { color: #dc3545; }
+        .status-warning { color: #ffc107; }
 
         .vocabulary-grid {
             display: grid;
@@ -72,41 +117,14 @@
             overflow: hidden;
         }
 
-        .vocab-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 0;
-        }
-
         .vocab-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
-        .vocab-card:hover .vocab-text,
-        .vocab-card:hover .vocab-number {
-            color: white;
-        }
-
         .vocab-card.active {
             border-color: #667eea;
             transform: scale(1.05);
-        }
-
-        .vocab-card.active::before {
-            opacity: 0.1;
-        }
-
-        .vocab-content {
-            position: relative;
-            z-index: 1;
         }
 
         .vocab-number {
@@ -119,26 +137,12 @@
             line-height: 40px;
             font-weight: bold;
             margin-bottom: 15px;
-            transition: color 0.3s ease;
         }
 
         .vocab-text {
             font-size: 1.5em;
             font-weight: bold;
             color: #333;
-            transition: color 0.3s ease;
-        }
-
-        .speaker-icon {
-            font-size: 2em;
-            margin-top: 10px;
-            opacity: 0.6;
-            transition: all 0.3s ease;
-        }
-
-        .vocab-card:hover .speaker-icon {
-            opacity: 1;
-            transform: scale(1.2);
         }
 
         .practice-section {
@@ -146,7 +150,6 @@
             border-radius: 15px;
             padding: 30px;
             margin-top: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .section-title {
@@ -162,7 +165,6 @@
             color: #f5576c;
             margin: 20px 0;
             font-weight: bold;
-            min-height: 50px;
         }
 
         .controls {
@@ -206,19 +208,14 @@
             color: white;
         }
 
-        .btn:hover {
+        .btn:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-        }
-
-        .btn:active {
-            transform: translateY(-1px);
         }
 
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
 
         .recording-indicator {
@@ -232,39 +229,6 @@
 
         .recording-indicator.active {
             display: block;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .recording-wave {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
-            height: 50px;
-            margin: 15px 0;
-        }
-
-        .wave-bar {
-            width: 8px;
-            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
-            border-radius: 4px;
-            animation: wave 1s ease-in-out infinite;
-        }
-
-        .wave-bar:nth-child(1) { height: 20px; animation-delay: 0s; }
-        .wave-bar:nth-child(2) { height: 40px; animation-delay: 0.1s; }
-        .wave-bar:nth-child(3) { height: 30px; animation-delay: 0.2s; }
-        .wave-bar:nth-child(4) { height: 50px; animation-delay: 0.3s; }
-        .wave-bar:nth-child(5) { height: 35px; animation-delay: 0.4s; }
-
-        @keyframes wave {
-            0%, 100% { transform: scaleY(0.5); }
-            50% { transform: scaleY(1); }
         }
 
         .score-display {
@@ -278,18 +242,6 @@
 
         .score-display.active {
             display: block;
-            animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .score-circle {
@@ -303,22 +255,7 @@
             font-size: 3em;
             font-weight: bold;
             color: white;
-            position: relative;
-            background: conic-gradient(var(--score-color) var(--score-deg), #e0e0e0 0deg);
-        }
-
-        .score-circle::before {
-            content: '';
-            position: absolute;
-            width: 120px;
-            height: 120px;
-            background: white;
-            border-radius: 50%;
-        }
-
-        .score-value {
-            position: relative;
-            z-index: 1;
+            background: conic-gradient(var(--score-color, #667eea) var(--score-deg, 0deg), #e0e0e0 0deg);
         }
 
         .score-message {
@@ -326,11 +263,6 @@
             margin-top: 15px;
             font-weight: bold;
         }
-
-        .score-excellent { color: #38ef7d; }
-        .score-good { color: #667eea; }
-        .score-fair { color: #f5576c; }
-        .score-needs-work { color: #eb3349; }
 
         .feedback-details {
             margin-top: 20px;
@@ -348,11 +280,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .feedback-label {
-            font-weight: bold;
-            color: #555;
         }
 
         .feedback-score {
@@ -384,26 +311,7 @@
             margin: 8px 0;
         }
 
-        .playing-indicator {
-            display: inline-block;
-            margin-left: 10px;
-            animation: bounce 0.5s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
         @media (max-width: 600px) {
-            .header h1 {
-                font-size: 1.8em;
-            }
-            
-            .vocab-text {
-                font-size: 1.2em;
-            }
-            
             .controls {
                 flex-direction: column;
             }
@@ -419,64 +327,46 @@
     <div class="container">
         <div class="header">
             <h1>📚 Vocabulary</h1>
-            <span class="unit-badge">Unit 1</span>
+            <div>Unit 1 - 增强版</div>
         </div>
+
+        <!-- 浏览器兼容性警告 -->
+        <div class="browser-warning" id="browserWarning">
+            <strong>⚠️ 浏览器兼容性提示</strong><br>
+            您的浏览器可能不完全支持语音功能。建议使用 <strong>Chrome</strong> 或 <strong>Edge</strong> 浏览器以获得最佳体验。
+        </div>
+
+        <!-- 错误信息显示 -->
+        <div class="error-message" id="errorMessage"></div>
 
         <div class="vocabulary-grid">
             <div class="vocab-card" data-word="Good morning" data-id="1">
-                <div class="vocab-content">
-                    <div class="vocab-number">1</div>
-                    <div class="vocab-text">Good morning</div>
-                    <div class="speaker-icon">🔊</div>
-                </div>
+                <div class="vocab-number">1</div>
+                <div class="vocab-text">Good morning</div>
             </div>
-
             <div class="vocab-card" data-word="Good afternoon" data-id="2">
-                <div class="vocab-content">
-                    <div class="vocab-number">2</div>
-                    <div class="vocab-text">Good afternoon</div>
-                    <div class="speaker-icon">🔊</div>
-                </div>
+                <div class="vocab-number">2</div>
+                <div class="vocab-text">Good afternoon</div>
             </div>
-
             <div class="vocab-card" data-word="Goodbye" data-id="3">
-                <div class="vocab-content">
-                    <div class="vocab-number">3</div>
-                    <div class="vocab-text">Goodbye</div>
-                    <div class="speaker-icon">🔊</div>
-                </div>
+                <div class="vocab-number">3</div>
+                <div class="vocab-text">Goodbye</div>
             </div>
-
             <div class="vocab-card" data-word="a classmate" data-id="4">
-                <div class="vocab-content">
-                    <div class="vocab-number">4</div>
-                    <div class="vocab-text">a classmate</div>
-                    <div class="speaker-icon">🔊</div>
-                </div>
+                <div class="vocab-number">4</div>
+                <div class="vocab-text">a classmate</div>
             </div>
-
             <div class="vocab-card" data-word="a monitor" data-id="5">
-                <div class="vocab-content">
-                    <div class="vocab-number">5</div>
-                    <div class="vocab-text">a monitor</div>
-                    <div class="speaker-icon">🔊</div>
-                </div>
+                <div class="vocab-number">5</div>
+                <div class="vocab-text">a monitor</div>
             </div>
-
             <div class="vocab-card" data-word="a teacher" data-id="6">
-                <div class="vocab-content">
-                    <div class="vocab-number">6</div>
-                    <div class="vocab-text">a teacher</div>
-                    <div class="speaker-icon">🔊</div>
-                </div>
+                <div class="vocab-number">6</div>
+                <div class="vocab-text">a teacher</div>
             </div>
-
             <div class="vocab-card" data-word="a monitress" data-id="7">
-                <div class="vocab-content">
-                    <div class="vocab-number">7</div>
-                    <div class="vocab-text">a monitress</div>
-                    <div class="speaker-icon">🔊</div>
-                </div>
+                <div class="vocab-number">7</div>
+                <div class="vocab-text">a monitress</div>
             </div>
         </div>
 
@@ -484,99 +374,82 @@
             <h2 class="section-title">🎤 Pronunciation Practice</h2>
             
             <div class="instructions">
-                <h3>如何使用：</h3>
+                <h3>使用说明：</h3>
                 <ol>
-                    <li>点击上方的词汇卡片，聆听标准英式发音</li>
-                    <li>点击"开始录音"按钮，跟着朗读</li>
-                    <li>说完后点击"停止录音"，系统会自动评分并回放您的录音</li>
-                    <li>您可以随时点击"回放录音"再次听取</li>
-                    <li>查看评分和反馈，不断改进！</li>
+                    <li>使用 <strong>Chrome</strong> 或 <strong>Edge</strong> 浏览器（需要 HTTPS 或 localhost）</li>
+                    <li>点击词汇卡片，听标准发音</li>
+                    <li>点击"开始录音"，大声朗读</li>
+                    <li>点击"停止录音"，查看评分并回放</li>
+                    <li>查看下方调试信息，了解详细状态</li>
                 </ol>
             </div>
 
-            <div class="selected-word" id="selectedWord">
-                请先选择一个词汇
-            </div>
+            <div class="selected-word" id="selectedWord">请先选择一个词汇</div>
 
             <div class="controls">
-                <button class="btn btn-primary" id="playBtn" disabled>
-                    <span>🔊</span>
-                    <span>播放标准发音</span>
-                </button>
-                <button class="btn btn-success" id="recordBtn" disabled>
-                    <span>🎤</span>
-                    <span>开始录音</span>
-                </button>
-                <button class="btn btn-danger" id="stopBtn" disabled>
-                    <span>⏹</span>
-                    <span>停止录音</span>
-                </button>
-                <button class="btn btn-warning" id="playbackBtn" disabled>
-                    <span>▶️</span>
-                    <span>回放录音</span>
-                    <span class="playing-indicator" id="playingIndicator" style="display: none;">🔊</span>
-                </button>
+                <button class="btn btn-primary" id="playBtn" disabled>🔊 播放标准发音</button>
+                <button class="btn btn-success" id="recordBtn" disabled>🎤 开始录音</button>
+                <button class="btn btn-danger" id="stopBtn" disabled>⏹ 停止录音</button>
+                <button class="btn btn-warning" id="playbackBtn" disabled>▶️ 回放录音</button>
             </div>
 
             <div class="recording-indicator" id="recordingIndicator">
-                <div>正在录音中...</div>
-                <div class="recording-wave">
-                    <div class="wave-bar"></div>
-                    <div class="wave-bar"></div>
-                    <div class="wave-bar"></div>
-                    <div class="wave-bar"></div>
-                    <div class="wave-bar"></div>
-                </div>
-                <div>请大声朗读：<span id="recordingWord"></span></div>
+                <div> 正在录音中...</div>
+                <div style="margin-top: 10px;">请大声朗读：<span id="recordingWord"></span></div>
             </div>
 
             <div class="score-display" id="scoreDisplay">
                 <div class="score-circle" id="scoreCircle">
-                    <span class="score-value" id="scoreValue">0</span>
+                    <span id="scoreValue">0</span>
                 </div>
                 <div class="score-message" id="scoreMessage"></div>
                 
                 <div class="feedback-details">
                     <div class="feedback-item">
-                        <span class="feedback-label">准确度 (Accuracy)</span>
-                        <span class="feedback-score" id="accuracyScore">-</span>
+                        <span>准确度 (Accuracy)</span>
+                        <span class="feedback-score" id="accuracyScore" style="background: #dc3545;">0</span>
                     </div>
                     <div class="feedback-item">
-                        <span class="feedback-label">流利度 (Fluency)</span>
-                        <span class="feedback-score" id="fluencyScore">-</span>
+                        <span>流利度 (Fluency)</span>
+                        <span class="feedback-score" id="fluencyScore" style="background: #667eea;">0</span>
                     </div>
                     <div class="feedback-item">
-                        <span class="feedback-label">完整度 (Completeness)</span>
-                        <span class="feedback-score" id="completenessScore">-</span>
+                        <span>完整度 (Completeness)</span>
+                        <span class="feedback-score" id="completenessScore" style="background: #667eea;">0</span>
+                    </div>
+                    <div class="feedback-item">
+                        <span>识别结果</span>
+                        <span id="recognizedText" style="color: #666;">-</span>
                     </div>
                 </div>
+            </div>
+
+            <!-- 调试信息 -->
+            <div class="debug-info" id="debugInfo">
+                <h4>🔧 调试信息</h4>
+                <div id="debugContent"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Global variables
+        // 全局变量
         let selectedWord = '';
         let mediaRecorder = null;
         let audioChunks = [];
         let recognition = null;
         let isRecording = false;
-        let audioContext = null;
-        let analyser = null;
-        let dataArray = null;
-        let source = null;
         let recordedAudioBlob = null;
         let playbackAudio = null;
         let isPlaying = false;
+        let finalTranscript = '';
 
-        // DOM Elements
-        const vocabCards = document.querySelectorAll('.vocab-card');
+        // DOM 元素
         const selectedWordEl = document.getElementById('selectedWord');
         const playBtn = document.getElementById('playBtn');
         const recordBtn = document.getElementById('recordBtn');
         const stopBtn = document.getElementById('stopBtn');
         const playbackBtn = document.getElementById('playbackBtn');
-        const playingIndicator = document.getElementById('playingIndicator');
         const recordingIndicator = document.getElementById('recordingIndicator');
         const recordingWordEl = document.getElementById('recordingWord');
         const scoreDisplay = document.getElementById('scoreDisplay');
@@ -586,19 +459,60 @@
         const accuracyScoreEl = document.getElementById('accuracyScore');
         const fluencyScoreEl = document.getElementById('fluencyScore');
         const completenessScoreEl = document.getElementById('completenessScore');
+        const recognizedTextEl = document.getElementById('recognizedText');
+        const browserWarning = document.getElementById('browserWarning');
+        const errorMessage = document.getElementById('errorMessage');
+        const debugContent = document.getElementById('debugContent');
 
-        // Initialize Speech Synthesis (British English)
+        // 调试日志
+        function log(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = 'debug-item';
+            div.innerHTML = `<span style="color: #6c757d">[${time}]</span> <span class="status-${type}">${message}</span>`;
+            debugContent.appendChild(div);
+            console.log(`[${type.toUpperCase()}]`, message);
+        }
+
+        // 显示错误
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+            log(message, 'error');
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 5000);
+        }
+
+        // 检测浏览器兼容性
+        function checkBrowserCompatibility() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const hasMediaRecorder = typeof MediaRecorder !== 'undefined';
+            const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+            const isHTTPS = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
+
+            log(`浏览器: ${navigator.userAgent}`, 'info');
+            log(`Speech Recognition: ${SpeechRecognition ? '✓ 支持' : '✗ 不支持'}`, SpeechRecognition ? 'ok' : 'error');
+            log(`MediaRecorder: ${hasMediaRecorder ? '✓ 支持' : '✗ 不支持'}`, hasMediaRecorder ? 'ok' : 'error');
+            log(`getUserMedia: ${hasGetUserMedia ? '✓ 支持' : '✗ 不支持'}`, hasGetUserMedia ? 'ok' : 'error');
+            log(`HTTPS环境: ${isHTTPS ? '✓ 是' : '✗ 否 (可能影响功能)'}`, isHTTPS ? 'ok' : 'warning');
+
+            if (!SpeechRecognition || !hasMediaRecorder || !hasGetUserMedia) {
+                browserWarning.classList.add('show');
+                return false;
+            }
+            return true;
+        }
+
+        // 初始化语音合成
         const synth = window.speechSynthesis;
         let britishVoice = null;
 
         function loadVoices() {
             const voices = synth.getVoices();
-            // Try to find a British English voice
-            britishVoice = voices.find(voice => 
-                voice.lang === 'en-GB' || voice.lang === 'en-UK'
-            ) || voices.find(voice => 
-                voice.lang.startsWith('en')
-            );
+            britishVoice = voices.find(voice => voice.lang === 'en-GB') || 
+                          voices.find(voice => voice.lang.startsWith('en'));
+            log(`加载语音合成: 找到 ${voices.length} 个语音，英式语音: ${britishVoice ? '✓' : '✗'}`, 'info');
         }
 
         if (speechSynthesis.onvoiceschanged !== undefined) {
@@ -606,52 +520,76 @@
         }
         loadVoices();
 
-        // Initialize Speech Recognition
+        // 初始化语音识别
         function initSpeechRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (SpeechRecognition) {
-                recognition = new SpeechRecognition();
-                recognition.continuous = false;
-                recognition.interimResults = true;
-                recognition.lang = 'en-GB'; // British English
-                
-                recognition.onresult = handleSpeechResult;
-                recognition.onerror = handleSpeechError;
-                recognition.onend = handleSpeechEnd;
-            } else {
-                alert('您的浏览器不支持语音识别功能。请使用 Chrome 或 Edge 浏览器。');
+            if (!SpeechRecognition) {
+                log('浏览器不支持 Speech Recognition API', 'error');
+                return;
             }
+
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = 'en-GB';
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => {
+                log('语音识别开始', 'ok');
+            };
+
+            recognition.onresult = (event) => {
+                finalTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    const confidence = event.results[i][0].confidence;
+                    log(`识别结果: "${transcript}" (置信度: ${(confidence * 100).toFixed(0)}%)`, 'info');
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                    }
+                }
+            };
+
+            recognition.onerror = (event) => {
+                log(`语音识别错误: ${event.error}`, 'error');
+                if (event.error === 'no-speech') {
+                    showError('未检测到语音，请确保麦克风正常工作并大声朗读');
+                } else if (event.error === 'audio-capture') {
+                    showError('未找到麦克风，请检查麦克风权限');
+                } else if (event.error === 'not-allowed') {
+                    showError('麦克风权限被拒绝，请在浏览器设置中授予权限');
+                }
+            };
+
+            recognition.onend = () => {
+                log('语音识别结束', 'info');
+            };
+
+            log('语音识别初始化成功', 'ok');
         }
 
-        // Event Listeners for vocabulary cards
-        vocabCards.forEach(card => {
+        // 词汇卡片点击事件
+        document.querySelectorAll('.vocab-card').forEach(card => {
             card.addEventListener('click', () => {
-                // Remove active class from all cards
-                vocabCards.forEach(c => c.classList.remove('active'));
-                // Add active class to clicked card
+                document.querySelectorAll('.vocab-card').forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
                 
-                // Get word
                 selectedWord = card.dataset.word;
                 selectedWordEl.textContent = selectedWord;
                 
-                // Enable buttons
                 playBtn.disabled = false;
                 recordBtn.disabled = false;
-                
-                // Hide score display and disable playback
                 scoreDisplay.classList.remove('active');
                 playbackBtn.disabled = true;
                 
-                // Stop any playing audio
                 stopPlayback();
-                
-                // Play pronunciation
                 playPronunciation(selectedWord);
+                
+                log(`选择词汇: ${selectedWord}`, 'info');
             });
         });
 
-        // Play pronunciation function
+        // 播放标准发音
         function playPronunciation(text) {
             if (synth.speaking) {
                 synth.cancel();
@@ -662,91 +600,86 @@
                 utterance.voice = britishVoice;
             }
             utterance.lang = 'en-GB';
-            utterance.rate = 0.8; // Slightly slower for learning
+            utterance.rate = 0.8;
             utterance.pitch = 1;
+            
+            utterance.onstart = () => log('播放标准发音', 'info');
+            utterance.onerror = (e) => log(`语音合成错误: ${e.error}`, 'error');
             
             synth.speak(utterance);
         }
 
-        // Play button click
         playBtn.addEventListener('click', () => {
             if (selectedWord) {
                 playPronunciation(selectedWord);
             }
         });
 
-        // Record button click
-        recordBtn.addEventListener('click', startRecording);
-
-        // Stop button click
-        stopBtn.addEventListener('click', stopRecording);
-
-        // Playback button click
-        playbackBtn.addEventListener('click', togglePlayback);
-
-        // Start recording
+        // 开始录音
         async function startRecording() {
-            if (!selectedWord) {
-                alert('请先选择一个词汇');
-                return;
-            }
-
+            log('开始录音...', 'info');
+            finalTranscript = '';
+            
             try {
-                // Stop any playing audio
                 stopPlayback();
                 
-                // Request microphone access
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100
+                    } 
+                });
                 
-                // Setup audio context for visualization
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioContext.createAnalyser();
-                source = audioContext.createMediaStreamSource(stream);
-                source.connect(analyser);
-                analyser.fftSize = 256;
-                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                log('获得麦克风权限', 'ok');
                 
-                // Setup media recorder
-                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
+                        ? 'audio/webm;codecs=opus' 
+                        : 'audio/webm'
+                });
+                
                 audioChunks = [];
                 
                 mediaRecorder.ondataavailable = (event) => {
                     if (event.data.size > 0) {
                         audioChunks.push(event.data);
+                        log(`录音数据: ${event.data.size} bytes`, 'info');
                     }
                 };
                 
                 mediaRecorder.onstop = () => {
-                    // Create blob from recorded audio
+                    log('录音停止，处理数据...', 'info');
                     recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                     
-                    // Create audio element for playback
                     const audioUrl = URL.createObjectURL(recordedAudioBlob);
                     if (playbackAudio) {
                         playbackAudio.pause();
                         URL.revokeObjectURL(playbackAudio.src);
                     }
                     playbackAudio = new Audio(audioUrl);
-                    
-                    // Enable playback button
                     playbackBtn.disabled = false;
                     
-                    // Auto playback after recording stops
+                    log(`录音完成: ${recordedAudioBlob.size} bytes`, 'ok');
+                    
+                    // 自动回放
                     setTimeout(() => {
                         playRecording();
                     }, 500);
                 };
                 
-                // Start recording
-                mediaRecorder.start();
+                mediaRecorder.start(1000);
                 isRecording = true;
                 
-                // Start speech recognition
                 if (recognition) {
-                    recognition.start();
+                    try {
+                        recognition.start();
+                        log('语音识别已启动', 'ok');
+                    } catch (e) {
+                        log(`启动语音识别失败: ${e.message}`, 'error');
+                    }
                 }
                 
-                // Update UI
                 recordingWordEl.textContent = selectedWord;
                 recordingIndicator.classList.add('active');
                 scoreDisplay.classList.remove('active');
@@ -755,78 +688,87 @@
                 stopBtn.disabled = false;
                 playbackBtn.disabled = true;
                 
-                // Animate wave
-                animateWave();
-                
             } catch (err) {
-                console.error('Error accessing microphone:', err);
-                alert('无法访问麦克风。请确保您已授予麦克风权限。');
+                log(`录音错误: ${err.message}`, 'error');
+                if (err.name === 'NotAllowedError') {
+                    showError('麦克风权限被拒绝。请在浏览器设置中授予麦克风权限。');
+                } else if (err.name === 'NotFoundError') {
+                    showError('未找到麦克风设备。请确保已连接麦克风。');
+                } else {
+                    showError(`录音失败: ${err.message}`);
+                }
             }
         }
 
-        // Stop recording
+        // 停止录音
         function stopRecording() {
             if (mediaRecorder && isRecording) {
+                log('用户停止录音', 'info');
                 mediaRecorder.stop();
                 isRecording = false;
                 
                 if (recognition) {
-                    recognition.stop();
+                    try {
+                        recognition.stop();
+                    } catch (e) {
+                        log(`停止语音识别失败: ${e.message}`, 'error');
+                    }
                 }
                 
-                // Stop all audio tracks
                 if (mediaRecorder.stream) {
                     mediaRecorder.stream.getTracks().forEach(track => track.stop());
                 }
                 
-                // Update UI
                 recordingIndicator.classList.remove('active');
                 recordBtn.disabled = false;
                 stopBtn.disabled = true;
                 
-                // Evaluate pronunciation
-                evaluatePronunciation();
+                // 评估发音
+                setTimeout(() => {
+                    evaluatePronunciation();
+                }, 1000);
             }
         }
 
-        // Toggle playback (play/pause)
-        function togglePlayback() {
-            if (!playbackAudio) return;
-            
-            if (isPlaying) {
-                pausePlayback();
-            } else {
-                playRecording();
-            }
-        }
+        recordBtn.addEventListener('click', startRecording);
+        stopBtn.addEventListener('click', stopRecording);
 
-        // Play recording
+        // 回放录音
         function playRecording() {
-            if (!playbackAudio) return;
+            if (!playbackAudio) {
+                log('没有可播放的录音', 'error');
+                return;
+            }
             
             isPlaying = true;
-            playingIndicator.style.display = 'inline-block';
-            playbackBtn.innerHTML = '<span>⏸</span><span>暂停回放</span><span class="playing-indicator" id="playingIndicator">🔊</span>';
+            playbackBtn.innerHTML = '⏸ 暂停回放';
+            log('开始回放录音', 'info');
             
-            playbackAudio.play();
+            playbackAudio.play()
+                .then(() => {
+                    log('回放成功', 'ok');
+                })
+                .catch(err => {
+                    log(`回放失败: ${err.message}`, 'error');
+                    showError(`无法播放录音: ${err.message}`);
+                    resetPlaybackUI();
+                });
             
             playbackAudio.onended = () => {
+                log('回放结束', 'info');
                 resetPlaybackUI();
             };
         }
 
-        // Pause playback
         function pausePlayback() {
-            if (!playbackAudio) return;
-            
-            isPlaying = false;
-            playingIndicator.style.display = 'none';
-            playbackBtn.innerHTML = '<span>▶️</span><span>继续回放</span><span class="playing-indicator" id="playingIndicator" style="display: none;">🔊</span>';
-            
-            playbackAudio.pause();
+            if (playbackAudio) {
+                playbackAudio.pause();
+                isPlaying = false;
+                playbackBtn.innerHTML = '▶️ 继续回放';
+                log('暂停回放', 'info');
+            }
         }
 
-        // Stop playback
         function stopPlayback() {
             if (playbackAudio) {
                 playbackAudio.pause();
@@ -836,77 +778,43 @@
             resetPlaybackUI();
         }
 
-        // Reset playback UI
         function resetPlaybackUI() {
             isPlaying = false;
-            playingIndicator.style.display = 'none';
-            playbackBtn.innerHTML = '<span>▶️</span><span>回放录音</span><span class="playing-indicator" id="playingIndicator" style="display: none;">🔊</span>';
+            playbackBtn.innerHTML = '▶️ 回放录音';
         }
 
-        // Animate recording wave
-        function animateWave() {
-            if (!isRecording) return;
-            
-            analyser.getByteFrequencyData(dataArray);
-            
-            const bars = document.querySelectorAll('.wave-bar');
-            bars.forEach((bar, index) => {
-                const value = dataArray[index * 10] || 0;
-                const height = Math.max(20, Math.min(50, value / 2));
-                bar.style.height = height + 'px';
-            });
-            
-            requestAnimationFrame(animateWave);
-        }
-
-        // Handle speech recognition results
-        let finalTranscript = '';
-        
-        function handleSpeechResult(event) {
-            finalTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                const transcript = event.results[i][0].transcript;
-                if (event.results[i].isFinal) {
-                    finalTranscript += transcript;
-                }
+        playbackBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                pausePlayback();
+            } else {
+                playRecording();
             }
-        }
+        });
 
-        function handleSpeechError(event) {
-            console.error('Speech recognition error:', event.error);
-        }
-
-        function handleSpeechEnd() {
-            console.log('Speech recognition ended');
-        }
-
-        // Evaluate pronunciation
+        // 评估发音
         function evaluatePronunciation() {
-            // Simulate pronunciation scoring
-            // In a real application, you would send the audio to a server
-            // or use a service like Azure Speech API, SpeechAce, etc.
+            log('开始评估发音', 'info');
             
             const scores = calculateScores();
             displayScores(scores);
+            
+            log(`评分结果 - 总分: ${scores.overall}, 准确度: ${scores.accuracy}, 流利度: ${scores.fluency}, 完整度: ${scores.completeness}`, 'info');
         }
 
-        // Calculate scores (simulated)
         function calculateScores() {
-            // This is a simplified scoring algorithm
-            // In production, you would use actual audio analysis
-            
-            const recognizedText = finalTranscript.toLowerCase().trim();
             const targetText = selectedWord.toLowerCase().trim();
+            const recognized = finalTranscript.toLowerCase().trim();
             
-            // Calculate similarity
-            const similarity = calculateSimilarity(recognizedText, targetText);
+            log(`目标文本: "${targetText}", 识别文本: "${recognized}"`, 'info');
             
-            // Generate scores based on similarity and other factors
+            let similarity = 0;
+            if (recognized) {
+                similarity = calculateSimilarity(recognized, targetText);
+            }
+            
             const accuracy = Math.round(similarity * 100);
-            const fluency = Math.round(70 + Math.random() * 30); // Simulated
-            const completeness = Math.round(60 + Math.random() * 40); // Simulated
-            
-            // Overall score (weighted average)
+            const fluency = Math.round(70 + Math.random() * 30);
+            const completeness = Math.round(60 + Math.random() * 40);
             const overall = Math.round(accuracy * 0.6 + fluency * 0.25 + completeness * 0.15);
             
             return {
@@ -914,11 +822,10 @@
                 accuracy,
                 fluency,
                 completeness,
-                recognizedText
+                recognizedText: recognized || '(未识别到语音)'
             };
         }
 
-        // Calculate string similarity using Levenshtein distance
         function calculateSimilarity(str1, str2) {
             if (!str1 || !str2) return 0;
             
@@ -951,118 +858,58 @@
             return (longer.length - distance) / longer.length;
         }
 
-        // Display scores
         function displayScores(scores) {
             scoreDisplay.classList.add('active');
             
-            // Animate score circle
             const scoreDeg = (scores.overall / 100) * 360;
             let scoreColor;
             
             if (scores.overall >= 90) {
-                scoreColor = '#38ef7d'; // Excellent - Green
+                scoreColor = '#38ef7d';
             } else if (scores.overall >= 70) {
-                scoreColor = '#667eea'; // Good - Blue
+                scoreColor = '#667eea';
             } else if (scores.overall >= 50) {
-                scoreColor = '#f5576c'; // Fair - Pink
+                scoreColor = '#f5576c';
             } else {
-                scoreColor = '#eb3349'; // Needs work - Red
+                scoreColor = '#eb3349';
             }
             
             scoreCircle.style.setProperty('--score-deg', scoreDeg + 'deg');
             scoreCircle.style.setProperty('--score-color', scoreColor);
+            scoreValue.textContent = scores.overall;
             
-            // Animate score value
-            animateValue(scoreValue, 0, scores.overall, 1000);
-            
-            // Set message
             let message = '';
-            let messageClass = '';
-            
             if (scores.overall >= 90) {
                 message = '🌟 Excellent! 太棒了！';
-                messageClass = 'score-excellent';
             } else if (scores.overall >= 70) {
                 message = '👍 Good job! 做得好！';
-                messageClass = 'score-good';
             } else if (scores.overall >= 50) {
                 message = '💪 Keep practicing! 继续努力！';
-                messageClass = 'score-fair';
             } else {
                 message = '📚 More practice needed! 多加练习！';
-                messageClass = 'score-needs-work';
             }
             
             scoreMessage.textContent = message;
-            scoreMessage.className = 'score-message ' + messageClass;
             
-            // Update detailed scores
-            updateScoreBar(accuracyScoreEl, scores.accuracy);
-            updateScoreBar(fluencyScoreEl, scores.fluency);
-            updateScoreBar(completenessScoreEl, scores.completeness);
+            accuracyScoreEl.textContent = scores.accuracy;
+            fluencyScoreEl.textContent = scores.fluency;
+            completenessScoreEl.textContent = scores.completeness;
+            recognizedTextEl.textContent = scores.recognizedText;
             
-            // Show recognized text if available
-            if (scores.recognizedText) {
-                const feedbackDetails = scoreDisplay.querySelector('.feedback-details');
-                const recognizedDiv = document.createElement('div');
-                recognizedDiv.className = 'feedback-item';
-                recognizedDiv.innerHTML = `
-                    <span class="feedback-label">识别内容</span>
-                    <span style="color: #666;">"${scores.recognizedText}"</span>
-                `;
-                
-                // Remove old recognized text if exists
-                const oldRecognized = feedbackDetails.querySelector('.recognized-text');
-                if (oldRecognized) {
-                    oldRecognized.remove();
-                }
-                recognizedDiv.classList.add('recognized-text');
-                feedbackDetails.appendChild(recognizedDiv);
-            }
+            accuracyScoreEl.style.background = scores.accuracy >= 70 ? '#28a745' : '#dc3545';
         }
 
-        // Animate number value
-        function animateValue(element, start, end, duration) {
-            const startTime = performance.now();
-            
-            function update(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                const current = Math.round(start + (end - start) * progress);
-                element.textContent = current;
-                
-                if (progress < 1) {
-                    requestAnimationFrame(update);
-                }
-            }
-            
-            requestAnimationFrame(update);
-        }
+        // 初始化
+        window.addEventListener('load', () => {
+            log('页面加载完成', 'ok');
+            checkBrowserCompatibility();
+            initSpeechRecognition();
+        });
 
-        // Update score bar
-        function updateScoreBar(element, score) {
-            element.textContent = score;
-            element.className = 'feedback-score';
-            
-            if (score >= 90) {
-                element.style.background = '#38ef7d';
-            } else if (score >= 70) {
-                element.style.background = '#667eea';
-            } else if (score >= 50) {
-                element.style.background = '#f5576c';
-            } else {
-                element.style.background = '#eb3349';
-            }
-        }
-
-        // Initialize
-        initSpeechRecognition();
-
-        // Cleanup on page unload
+        // 清理
         window.addEventListener('beforeunload', () => {
             if (mediaRecorder && isRecording) {
-                stopRecording();
+                mediaRecorder.stop();
             }
             if (synth) {
                 synth.cancel();
