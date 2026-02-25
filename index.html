@@ -1,114 +1,59 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 自動評分英語電子書</title>
+    <title>Unit 1 Vocabulary Learning</title>
     <style>
-        body { font-family: 'PingFang HK', sans-serif; background: #f8fafc; display: flex; flex-direction: column; align-items: center; padding: 20px; color: #1e293b; }
-        .word-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; max-width: 900px; }
-        .word-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center; border: 3px solid #e2e8f0; transition: all 0.3s ease; }
-        .word-card.recording { border-color: #3b82f6; background: #eff6ff; transform: scale(1.02); }
-        .word-card.correct { border-color: #22c55e; background: #f0fdf4; }
-        .word-card.wrong { border-color: #ef4444; background: #fef2f2; }
-        .word-text { font-size: 36px; font-weight: 800; margin-bottom: 8px; color: #0f172a; cursor: pointer; }
-        .word-text:hover { color: #3b82f6; }
-        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; margin-bottom: 15px; background: #f1f5f9; }
-        .score-box { font-size: 18px; font-weight: bold; margin: 10px 0; min-height: 27px; }
-        .suggestion { font-size: 14px; color: #64748b; line-height: 1.5; min-height: 42px; }
-        button { margin-top: 15px; padding: 12px 24px; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.2s; width: 100%; }
-        .btn-start { background: #3b82f6; color: white; }
-        .btn-start:disabled { background: #94a3b8; cursor: not-allowed; }
-        .pulse { animation: pulse-red 1.5s infinite; }
-        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
+        body { font-family: Arial, sans-serif; background: #FFF9E6; text-align: center; }
+        .card { background: white; border-radius: 15px; margin: 10px; padding: 20px; display: inline-block; width: 250px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        button { background: #4CAF50; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        .score { font-weight: bold; color: #E91E63; }
     </style>
 </head>
 <body>
-
-    <h1 style="margin-bottom: 5px;">🎓 AI 發音自動評分</h1>
-    <p style="color: #64748b; margin-bottom: 30px;">聽示範音後，按按鈕並朗讀，系統會自動評分</p>
-
-    <div class="word-grid" id="grid"></div>
+    <h1>Vocabulary Practice (Unit 1)</h1>
+    <div id="vocab-list"></div>
 
     <script>
-        const words = ["Apple", "Banana", "Cherry", "Dragonfruit", "Elderberry", "Fig", "Grape"];
-        
-        // 設定語音辨識
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'en-GB';
-        recognition.continuous = false; // 說完自動停止
-        recognition.interimResults = false;
+        const words = ["Good morning", "Good afternoon", "Goodbye", "a classmate", "a monitor", "a teacher", "a monitress"];
+        const listDiv = document.getElementById('vocab-list');
 
-        const grid = document.getElementById('grid');
-
-        words.forEach((word, index) => {
+        words.forEach(word => {
             const card = document.createElement('div');
-            card.className = 'word-card';
-            card.id = `card-${index}`;
+            card.className = 'card';
             card.innerHTML = `
-                <div class="word-text" onclick="speak('${word}')">${word} 🔊</div>
-                <div class="status-badge" id="status-${index}">待命中</div>
-                <div class="score-box" id="score-${index}"></div>
-                <div class="suggestion" id="suggest-${index}">點擊單字聽英式讀音</div>
-                <button class="btn-start" id="btn-${index}" onclick="runAI(${index}, '${word}')">🎤 開始錄音評分</button>
+                <h3>${word}</h3>
+                <button onclick="playUK('${word}')">🔊 Listen (UK)</button>
+                <button onclick="startRecord('${word}', this)">🎤 Record</button>
+                <p class="result"></p>
             `;
-            grid.appendChild(card);
+            listDiv.appendChild(card);
         });
 
-        function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-GB';
-            window.speechSynthesis.speak(utterance);
+        function playUK(text) {
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.voice = speechSynthesis.getVoices().find(v => v.lang === 'en-GB') || null;
+            msg.lang = 'en-GB';
+            speechSynthesis.speak(msg);
         }
 
-        function runAI(index, target) {
-            const btn = document.getElementById(`btn-${index}`);
-            const card = document.getElementById(`card-${index}`);
-            const status = document.getElementById(`status-${index}`);
-            const score = document.getElementById(`score-${index}`);
-            const suggest = document.getElementById(`suggest-${index}`);
-
-            // 重置介面
-            card.className = 'word-card recording pulse';
-            status.innerText = "🔴 正在聆聽...";
-            score.innerText = "";
-            suggest.innerText = "請大聲朗讀單字...";
-            btn.disabled = true;
-
-            recognition.start();
-
+        function startRecord(target, btn) {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-GB';
+            btn.innerText = "Listening...";
+            
             recognition.onresult = (event) => {
-                const result = event.results[0][0].transcript.toLowerCase().trim().replace(/[.,!]/g, "");
-                const targetLower = target.toLowerCase();
-
-                if (result === targetLower) {
-                    card.className = 'word-card correct';
-                    status.innerText = "✅ 辨識完成";
-                    score.innerText = "💯 評分：完美！";
-                    score.style.color = "#16a34a";
-                    suggest.innerText = "你的發音非常標準，請繼續保持。";
+                const speechToText = event.results[0][0].transcript.toLowerCase();
+                const resultP = btn.parentElement.querySelector('.result');
+                if(speechToText.includes(target.toLowerCase().replace('a ', ''))) {
+                    resultP.innerHTML = "Score: <span class='score'>100! Excellent</span>";
                 } else {
-                    card.className = 'word-card wrong';
-                    status.innerText = "❌ 辨識完成";
-                    score.innerText = "📉 評分：需要改進";
-                    score.style.color = "#dc2626";
-                    suggest.innerText = `你說了 "${result}"。建議：多聽幾次示範音，注意重音位置。`;
+                    resultP.innerHTML = `You said: "${speechToText}". <br>Try again!`;
                 }
+                btn.innerText = "Record";
             };
-
-            recognition.onspeechend = () => {
-                recognition.stop();
-                btn.disabled = false;
-                btn.innerText = "🔄 重新評分";
-            };
-
-            recognition.onerror = (event) => {
-                recognition.stop();
-                btn.disabled = false;
-                card.className = 'word-card';
-                status.innerText = "⚠️ 出錯了";
-                suggest.innerText = "沒聽清楚，請再試一次（記得允許麥克風權限）。";
-            };
+            recognition.start();
         }
-    </
+    </script>
+</body>
+</html>
