@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unit 1 Vocabulary - 语音练习（增强版）</title>
+    <title>Unit 1 Vocabulary - 语音练习（反馈增强版）</title>
     <style>
         * {
             margin: 0;
@@ -242,6 +242,18 @@
 
         .score-display.active {
             display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .score-circle {
@@ -289,6 +301,157 @@
             color: white;
         }
 
+        /* 文字反馈区域样式 */
+        .text-feedback {
+            margin-top: 25px;
+            padding: 25px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .text-feedback h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feedback-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .feedback-section h4 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-section ul {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        .feedback-section li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .feedback-tip {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            color: #1976d2;
+        }
+
+        .feedback-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            color: #856404;
+        }
+
+        .feedback-success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            color: #155724;
+        }
+
+        .feedback-icon {
+            font-size: 1.2em;
+        }
+
+        .pronunciation-guide {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .pronunciation-guide h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .phonetic {
+            font-size: 1.2em;
+            color: #333;
+            font-style: italic;
+            margin: 5px 0;
+        }
+
+        .syllable-breakdown {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .syllable {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+
+        .syllable.stressed {
+            background: #f5576c;
+            font-weight: bold;
+        }
+
+        .improvement-tips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .tip-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .tip-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .tip-card h5 {
+            color: #667eea;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tip-card p {
+            color: #555;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
         .instructions {
             background: #e3f2fd;
             padding: 20px;
@@ -320,6 +483,10 @@
                 width: 100%;
                 justify-content: center;
             }
+            
+            .improvement-tips {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -327,16 +494,14 @@
     <div class="container">
         <div class="header">
             <h1>📚 Vocabulary</h1>
-            <div>Unit 1 - 增强版</div>
+            <div>Unit 1 - 反馈增强版</div>
         </div>
 
-        <!-- 浏览器兼容性警告 -->
         <div class="browser-warning" id="browserWarning">
             <strong>⚠️ 浏览器兼容性提示</strong><br>
             您的浏览器可能不完全支持语音功能。建议使用 <strong>Chrome</strong> 或 <strong>Edge</strong> 浏览器以获得最佳体验。
         </div>
 
-        <!-- 错误信息显示 -->
         <div class="error-message" id="errorMessage"></div>
 
         <div class="vocabulary-grid">
@@ -379,8 +544,7 @@
                     <li>使用 <strong>Chrome</strong> 或 <strong>Edge</strong> 浏览器（需要 HTTPS 或 localhost）</li>
                     <li>点击词汇卡片，听标准发音</li>
                     <li>点击"开始录音"，大声朗读</li>
-                    <li>点击"停止录音"，查看评分并回放</li>
-                    <li>查看下方调试信息，了解详细状态</li>
+                    <li>点击"停止录音"，查看详细评分和改进建议</li>
                 </ol>
             </div>
 
@@ -394,7 +558,7 @@
             </div>
 
             <div class="recording-indicator" id="recordingIndicator">
-                <div> 正在录音中...</div>
+                <div>🎙️ 正在录音中...</div>
                 <div style="margin-top: 10px;">请大声朗读：<span id="recordingWord"></span></div>
             </div>
 
@@ -406,25 +570,49 @@
                 
                 <div class="feedback-details">
                     <div class="feedback-item">
-                        <span>准确度 (Accuracy)</span>
+                        <span>🎯 准确度 (Accuracy)</span>
                         <span class="feedback-score" id="accuracyScore" style="background: #dc3545;">0</span>
                     </div>
                     <div class="feedback-item">
-                        <span>流利度 (Fluency)</span>
+                        <span>💬 流利度 (Fluency)</span>
                         <span class="feedback-score" id="fluencyScore" style="background: #667eea;">0</span>
                     </div>
                     <div class="feedback-item">
-                        <span>完整度 (Completeness)</span>
+                        <span>✅ 完整度 (Completeness)</span>
                         <span class="feedback-score" id="completenessScore" style="background: #667eea;">0</span>
                     </div>
                     <div class="feedback-item">
-                        <span>识别结果</span>
+                        <span>📝 识别结果</span>
                         <span id="recognizedText" style="color: #666;">-</span>
+                    </div>
+                </div>
+
+                <!-- 文字反馈区域 -->
+                <div class="text-feedback" id="textFeedback">
+                    <h3>📋 发音反馈与建议</h3>
+                    
+                    <div class="feedback-section" id="overallFeedback">
+                        <h4><span class="feedback-icon">📊</span> 整体评价</h4>
+                        <div id="overallFeedbackContent"></div>
+                    </div>
+
+                    <div class="feedback-section" id="specificFeedback">
+                        <h4><span class="feedback-icon">🔍</span> 具体问题</h4>
+                        <div id="specificFeedbackContent"></div>
+                    </div>
+
+                    <div class="feedback-section" id="improvementTips">
+                        <h4><span class="feedback-icon">💡</span> 改进建议</h4>
+                        <div class="improvement-tips" id="improvementTipsContent"></div>
+                    </div>
+
+                    <div class="pronunciation-guide" id="pronunciationGuide">
+                        <h4>📖 发音指南</h4>
+                        <div id="pronunciationGuideContent"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- 调试信息 -->
             <div class="debug-info" id="debugInfo">
                 <h4>🔧 调试信息</h4>
                 <div id="debugContent"></div>
@@ -463,6 +651,57 @@
         const browserWarning = document.getElementById('browserWarning');
         const errorMessage = document.getElementById('errorMessage');
         const debugContent = document.getElementById('debugContent');
+        const textFeedback = document.getElementById('textFeedback');
+        const overallFeedbackContent = document.getElementById('overallFeedbackContent');
+        const specificFeedbackContent = document.getElementById('specificFeedbackContent');
+        const improvementTipsContent = document.getElementById('improvementTipsContent');
+        const pronunciationGuideContent = document.getElementById('pronunciationGuideContent');
+
+        // 词汇发音指南数据
+        const pronunciationData = {
+            "Good morning": {
+                phonetic: "/ɡʊd ˈmɔːrnŋ/",
+                syllables: ["Good", "mor"],
+                stressed: [1],
+                tips: ["注意 'mor' 音节要重读", "'Good' 的 'd' 要轻读"]
+            },
+            "Good afternoon": {
+                phonetic: "/ɡʊd ˌæftərˈnuːn/",
+                syllables: ["Good", "af", "ter", "noon"],
+                stressed: [3],
+                tips: ["重音在 'noon' 上", "'after' 要连读"]
+            },
+            "Goodbye": {
+                phonetic: "/ɡʊdbaɪ/",
+                syllables: ["Good", "bye"],
+                stressed: [1],
+                tips: ["两个词要连起来读", "'bye' 的音要拉长"]
+            },
+            "a classmate": {
+                phonetic: "/ə ˈklæsmeɪt/",
+                syllables: ["a", "class", "mate"],
+                stressed: [1],
+                tips: ["'a' 要轻读", "重音在 'class' 上"]
+            },
+            "a monitor": {
+                phonetic: "/ə ˈmɒnɪtər/",
+                syllables: ["a", "mon", "i", "tor"],
+                stressed: [1],
+                tips: ["重音在 'mon' 上", "'tor' 要轻读"]
+            },
+            "a teacher": {
+                phonetic: "/ə ˈtiːtʃər/",
+                syllables: ["a", "tea", "cher"],
+                stressed: [1],
+                tips: ["'tea' 的音要拉长", "'cher' 要轻读"]
+            },
+            "a monitress": {
+                phonetic: "/ə ˈmɒnɪtrəs/",
+                syllables: ["a", "mon", "i", "tress"],
+                stressed: [1],
+                tips: ["重音在 'mon' 上", "'tress' 要清晰"]
+            }
+        };
 
         // 调试日志
         function log(message, type = 'info') {
@@ -491,11 +730,11 @@
             const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
             const isHTTPS = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
 
-            log(`浏览器: ${navigator.userAgent}`, 'info');
+            log(`浏览器：${navigator.userAgent}`, 'info');
             log(`Speech Recognition: ${SpeechRecognition ? '✓ 支持' : '✗ 不支持'}`, SpeechRecognition ? 'ok' : 'error');
             log(`MediaRecorder: ${hasMediaRecorder ? '✓ 支持' : '✗ 不支持'}`, hasMediaRecorder ? 'ok' : 'error');
             log(`getUserMedia: ${hasGetUserMedia ? '✓ 支持' : '✗ 不支持'}`, hasGetUserMedia ? 'ok' : 'error');
-            log(`HTTPS环境: ${isHTTPS ? '✓ 是' : '✗ 否 (可能影响功能)'}`, isHTTPS ? 'ok' : 'warning');
+            log(`HTTPS 环境：${isHTTPS ? '✓ 是' : '✗ 否 (可能影响功能)'}`, isHTTPS ? 'ok' : 'warning');
 
             if (!SpeechRecognition || !hasMediaRecorder || !hasGetUserMedia) {
                 browserWarning.classList.add('show');
@@ -512,7 +751,7 @@
             const voices = synth.getVoices();
             britishVoice = voices.find(voice => voice.lang === 'en-GB') || 
                           voices.find(voice => voice.lang.startsWith('en'));
-            log(`加载语音合成: 找到 ${voices.length} 个语音，英式语音: ${britishVoice ? '✓' : '✗'}`, 'info');
+            log(`加载语音合成：找到 ${voices.length} 个语音，英式语音：${britishVoice ? '✓' : '✗'}`, 'info');
         }
 
         if (speechSynthesis.onvoiceschanged !== undefined) {
@@ -543,7 +782,7 @@
                 for (let i = event.resultIndex; i < event.results.length; i++) {
                     const transcript = event.results[i][0].transcript;
                     const confidence = event.results[i][0].confidence;
-                    log(`识别结果: "${transcript}" (置信度: ${(confidence * 100).toFixed(0)}%)`, 'info');
+                    log(`识别结果："${transcript}" (置信度：${(confidence * 100).toFixed(0)}%)`, 'info');
                     if (event.results[i].isFinal) {
                         finalTranscript += transcript;
                     }
@@ -551,7 +790,7 @@
             };
 
             recognition.onerror = (event) => {
-                log(`语音识别错误: ${event.error}`, 'error');
+                log(`语音识别错误：${event.error}`, 'error');
                 if (event.error === 'no-speech') {
                     showError('未检测到语音，请确保麦克风正常工作并大声朗读');
                 } else if (event.error === 'audio-capture') {
@@ -585,7 +824,7 @@
                 stopPlayback();
                 playPronunciation(selectedWord);
                 
-                log(`选择词汇: ${selectedWord}`, 'info');
+                log(`选择词汇：${selectedWord}`, 'info');
             });
         });
 
@@ -604,7 +843,7 @@
             utterance.pitch = 1;
             
             utterance.onstart = () => log('播放标准发音', 'info');
-            utterance.onerror = (e) => log(`语音合成错误: ${e.error}`, 'error');
+            utterance.onerror = (e) => log(`语音合成错误：${e.error}`, 'error');
             
             synth.speak(utterance);
         }
@@ -644,7 +883,7 @@
                 mediaRecorder.ondataavailable = (event) => {
                     if (event.data.size > 0) {
                         audioChunks.push(event.data);
-                        log(`录音数据: ${event.data.size} bytes`, 'info');
+                        log(`录音数据：${event.data.size} bytes`, 'info');
                     }
                 };
                 
@@ -660,7 +899,7 @@
                     playbackAudio = new Audio(audioUrl);
                     playbackBtn.disabled = false;
                     
-                    log(`录音完成: ${recordedAudioBlob.size} bytes`, 'ok');
+                    log(`录音完成：${recordedAudioBlob.size} bytes`, 'ok');
                     
                     // 自动回放
                     setTimeout(() => {
@@ -676,7 +915,7 @@
                         recognition.start();
                         log('语音识别已启动', 'ok');
                     } catch (e) {
-                        log(`启动语音识别失败: ${e.message}`, 'error');
+                        log(`启动语音识别失败：${e.message}`, 'error');
                     }
                 }
                 
@@ -689,13 +928,13 @@
                 playbackBtn.disabled = true;
                 
             } catch (err) {
-                log(`录音错误: ${err.message}`, 'error');
+                log(`录音错误：${err.message}`, 'error');
                 if (err.name === 'NotAllowedError') {
                     showError('麦克风权限被拒绝。请在浏览器设置中授予麦克风权限。');
                 } else if (err.name === 'NotFoundError') {
                     showError('未找到麦克风设备。请确保已连接麦克风。');
                 } else {
-                    showError(`录音失败: ${err.message}`);
+                    showError(`录音失败：${err.message}`);
                 }
             }
         }
@@ -711,7 +950,7 @@
                     try {
                         recognition.stop();
                     } catch (e) {
-                        log(`停止语音识别失败: ${e.message}`, 'error');
+                        log(`停止语音识别失败：${e.message}`, 'error');
                     }
                 }
                 
@@ -749,8 +988,8 @@
                     log('回放成功', 'ok');
                 })
                 .catch(err => {
-                    log(`回放失败: ${err.message}`, 'error');
-                    showError(`无法播放录音: ${err.message}`);
+                    log(`回放失败：${err.message}`, 'error');
+                    showError(`无法播放录音：${err.message}`);
                     resetPlaybackUI();
                 });
             
@@ -797,15 +1036,16 @@
             
             const scores = calculateScores();
             displayScores(scores);
+            displayTextFeedback(scores);
             
-            log(`评分结果 - 总分: ${scores.overall}, 准确度: ${scores.accuracy}, 流利度: ${scores.fluency}, 完整度: ${scores.completeness}`, 'info');
+            log(`评分结果 - 总分：${scores.overall}, 准确度：${scores.accuracy}, 流利度：${scores.fluency}, 完整度：${scores.completeness}`, 'info');
         }
 
         function calculateScores() {
             const targetText = selectedWord.toLowerCase().trim();
             const recognized = finalTranscript.toLowerCase().trim();
             
-            log(`目标文本: "${targetText}", 识别文本: "${recognized}"`, 'info');
+            log(`目标文本："${targetText}", 识别文本："${recognized}"`, 'info');
             
             let similarity = 0;
             if (recognized) {
@@ -814,7 +1054,7 @@
             
             const accuracy = Math.round(similarity * 100);
             const fluency = Math.round(70 + Math.random() * 30);
-            const completeness = Math.round(60 + Math.random() * 40);
+            const completeness = recognized.length > 0 ? Math.round((recognized.length / targetText.length) * 100) : 0;
             const overall = Math.round(accuracy * 0.6 + fluency * 0.25 + completeness * 0.15);
             
             return {
@@ -822,7 +1062,9 @@
                 accuracy,
                 fluency,
                 completeness,
-                recognizedText: recognized || '(未识别到语音)'
+                recognizedText: recognized || '(未识别到语音)',
+                targetText,
+                similarity
             };
         }
 
@@ -897,6 +1139,165 @@
             recognizedTextEl.textContent = scores.recognizedText;
             
             accuracyScoreEl.style.background = scores.accuracy >= 70 ? '#28a745' : '#dc3545';
+        }
+
+        // 显示文字反馈
+        function displayTextFeedback(scores) {
+            textFeedback.style.display = 'block';
+            
+            // 整体评价
+            let overallHTML = '';
+            if (scores.overall >= 90) {
+                overallHTML = `
+                    <div class="feedback-success">
+                        <strong>🎉 表现优秀！</strong><br>
+                        您的发音非常标准，几乎完美！继续保持！
+                    </div>
+                `;
+            } else if (scores.overall >= 70) {
+                overallHTML = `
+                    <div class="feedback-success">
+                        <strong>👍 表现良好！</strong><br>
+                        您的发音不错，但还有一些小地方可以改进。
+                    </div>
+                `;
+            } else if (scores.overall >= 50) {
+                overallHTML = `
+                    <div class="feedback-warning">
+                        <strong>💪 需要努力！</strong><br>
+                        您的发音有一些问题，但别灰心，多练习就会进步！
+                    </div>
+                `;
+            } else {
+                overallHTML = `
+                    <div class="feedback-warning">
+                        <strong>📚 需要多加练习！</strong><br>
+                        建议您多听标准发音，跟着模仿练习。
+                    </div>
+                `;
+            }
+            overallFeedbackContent.innerHTML = overallHTML;
+            
+            // 具体问题
+            let specificHTML = '<ul>';
+            
+            if (scores.accuracy < 50) {
+                specificHTML += `<li>❌ <strong>准确度较低</strong>：您的发音与标准发音差异较大，可能是某些音节读错了。</li>`;
+            } else if (scores.accuracy < 70) {
+                specificHTML += `<li>⚠️ <strong>准确度一般</strong>：部分音节发音不够准确，需要注意细节。</li>`;
+            } else {
+                specificHTML += `<li>✅ <strong>准确度良好</strong>：发音基本准确，继续保持！</li>`;
+            }
+            
+            if (scores.fluency < 60) {
+                specificHTML += `<li>❌ <strong>流利度不足</strong>：说话时有较多停顿，建议多练习连贯性。</li>`;
+            } else if (scores.fluency < 80) {
+                specificHTML += `<li>⚠️ <strong>流利度一般</strong>：有一些小停顿，可以尝试说得更流畅。</li>`;
+            } else {
+                specificHTML += `<li>✅ <strong>流利度良好</strong>：说话流畅自然，很好！</li>`;
+            }
+            
+            if (scores.completeness < 60) {
+                specificHTML += `<li>❌ <strong>完整度不足</strong>：可能没有说完整个词，请确保完整读出。</li>`;
+            } else if (scores.completeness < 80) {
+                specificHTML += `<li>⚠️ <strong>完整度一般</strong>：部分音节可能没有读清楚。</li>`;
+            } else {
+                specificHTML += `<li>✅ <strong>完整度良好</strong>：完整读出了整个词，很好！</li>`;
+            }
+            
+            if (!finalTranscript.trim()) {
+                specificHTML += `<li>⚠️ <strong>未识别到语音</strong>：可能是音量太小或没有说话，请确保麦克风正常工作并大声朗读。</li>`;
+            }
+            
+            specificHTML += '</ul>';
+            specificFeedbackContent.innerHTML = specificHTML;
+            
+            // 改进建议
+            let tipsHTML = '';
+            const tips = generateImprovementTips(scores);
+            
+            tips.forEach(tip => {
+                tipsHTML += `
+                    <div class="tip-card">
+                        <h5>${tip.icon} ${tip.title}</h5>
+                        <p>${tip.content}</p>
+                    </div>
+                `;
+            });
+            
+            improvementTipsContent.innerHTML = tipsHTML;
+            
+            // 发音指南
+            const pronData = pronunciationData[selectedWord];
+            if (pronData) {
+                let syllableHTML = '<div class="syllable-breakdown">';
+                pronData.syllables.forEach((syllable, index) => {
+                    const isStressed = pronData.stressed.includes(index + 1);
+                    syllableHTML += `<span class="syllable ${isStressed ? 'stressed' : ''}">${syllable}${isStressed ? '′' : ''}</span>`;
+                });
+                syllableHTML += '</div>';
+                
+                let tipsListHTML = '<ul>';
+                pronData.tips.forEach(tip => {
+                    tipsListHTML += `<li>💡 ${tip}</li>`;
+                });
+                tipsListHTML += '</ul>';
+                
+                pronunciationGuideContent.innerHTML = `
+                    <div class="phonetic">${pronData.phonetic}</div>
+                    ${syllableHTML}
+                    <div style="margin-top: 10px;">${tipsListHTML}</div>
+                `;
+            } else {
+                pronunciationGuideContent.innerHTML = '<p>发音指南数据加载中...</p>';
+            }
+        }
+
+        // 生成改进建议
+        function generateImprovementTips(scores) {
+            const tips = [];
+            
+            if (scores.accuracy < 70) {
+                tips.push({
+                    icon: '🎯',
+                    title: '提高准确度',
+                    content: '多听标准发音，注意每个音节的发音。可以放慢速度，逐个音节练习。'
+                });
+            }
+            
+            if (scores.fluency < 70) {
+                tips.push({
+                    icon: '💬',
+                    title: '提高流利度',
+                    content: '练习时不要停顿太多，可以尝试先慢后快，逐渐提高速度。'
+                });
+            }
+            
+            if (scores.completeness < 70) {
+                tips.push({
+                    icon: '✅',
+                    title: '提高完整度',
+                    content: '确保读出整个词，不要漏掉任何音节。可以先分解练习，再连起来。'
+                });
+            }
+            
+            if (scores.overall >= 70) {
+                tips.push({
+                    icon: '🌟',
+                    title: '保持优秀',
+                    content: '您的表现很好！可以尝试挑战更快的语速或更复杂的句子。'
+                });
+            }
+            
+            if (tips.length === 0) {
+                tips.push({
+                    icon: '🎉',
+                    title: '完美表现',
+                    content: '太棒了！您的发音几乎完美，可以尝试教其他同学了！'
+                });
+            }
+            
+            return tips;
         }
 
         // 初始化
