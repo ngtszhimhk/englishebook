@@ -154,14 +154,9 @@
             object-fit: cover;
             border-radius: 10px;
             margin-bottom: 15px;
-            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4em;
+            overflow: hidden;
         }
 
-        /* 如果使用真實圖片，使用這個樣式 */
         .vocab-image img {
             width: 100%;
             height: 100%;
@@ -190,10 +185,9 @@
             font-family: 'Arial', sans-serif;
         }
 
-        /* 修改：中文詞義改為黑色 */
         .vocab-chinese {
             font-size: 1.3em;
-            color: #000;  /* 改為黑色 */
+            color: #000;
             font-weight: bold;
             margin: 8px 0;
         }
@@ -617,9 +611,7 @@
             <div class="vocab-card" data-word="Good morning" data-id="1">
                 <div class="vocab-number">1</div>
                 <div class="vocab-image">
-                    <!-- 如果有真實圖片，取消下面的註釋並刪除 emoji -->
-                    <!-- <img src="image1.jpg" alt="Good morning"> -->
-                    🌅
+                    <img src="image1.jpg" alt="Good morning">
                 </div>
                 <div class="vocab-english">
                     G<span class="vowel">oo</span>d m<span class="vowel">or</span>n<span class="vowel">i</span>ng
@@ -647,8 +639,7 @@
             <div class="vocab-card" data-word="Good afternoon" data-id="2">
                 <div class="vocab-number">2</div>
                 <div class="vocab-image">
-                    <!-- <img src="image2.jpg" alt="Good afternoon"> -->
-                    ☀️
+                    <img src="image2.jpg" alt="Good afternoon">
                 </div>
                 <div class="vocab-english">
                     G<span class="vowel">oo</span>d <span class="vowel">a</span>ft<span class="vowel">e</span>rn<span class="vowel">oo</span>n
@@ -680,8 +671,7 @@
             <div class="vocab-card" data-word="Goodbye" data-id="3">
                 <div class="vocab-number">3</div>
                 <div class="vocab-image">
-                    <!-- <img src="image3.jpg" alt="Goodbye"> -->
-                    👋
+                    <img src="image3.jpg" alt="Goodbye">
                 </div>
                 <div class="vocab-english">
                     G<span class="vowel">oo</span>db<span class="vowel">y</span><span class="vowel">e</span>
@@ -705,8 +695,7 @@
             <div class="vocab-card" data-word="a classmate" data-id="4">
                 <div class="vocab-number">4</div>
                 <div class="vocab-image">
-                    <!-- <img src="image4.jpg" alt="a classmate"> -->
-                    👥
+                    <img src="image4.jpg" alt="a classmate">
                 </div>
                 <div class="vocab-english">
                     <span class="vowel">a</span> cl<span class="vowel">a</span>ssm<span class="vowel">a</span>t<span class="vowel">e</span>
@@ -734,8 +723,7 @@
             <div class="vocab-card" data-word="a monitor" data-id="5">
                 <div class="vocab-number">5</div>
                 <div class="vocab-image">
-                    <!-- <img src="image5.jpg" alt="a monitor"> -->
-                    👦
+                    <img src="image5.jpg" alt="a monitor">
                 </div>
                 <div class="vocab-english">
                     <span class="vowel">a</span> m<span class="vowel">o</span>n<span class="vowel">i</span>t<span class="vowel">o</span>r
@@ -767,8 +755,7 @@
             <div class="vocab-card" data-word="a teacher" data-id="6">
                 <div class="vocab-number">6</div>
                 <div class="vocab-image">
-                    <!-- <img src="image6.jpg" alt="a teacher"> -->
-                    👩‍
+                    <img src="image6.jpg" alt="a teacher">
                 </div>
                 <div class="vocab-english">
                     <span class="vowel">a</span> t<span class="vowel">ea</span>ch<span class="vowel">e</span>r
@@ -796,13 +783,12 @@
             <div class="vocab-card" data-word="a monitress" data-id="7">
                 <div class="vocab-number">7</div>
                 <div class="vocab-image">
-                    <!-- <img src="image7.jpg" alt="a monitress"> -->
-                    👧
+                    <img src="image7.jpg" alt="a monitress">
                 </div>
                 <div class="vocab-english">
                     <span class="vowel">a</span> m<span class="vowel">o</span>n<span class="vowel">i</span>tr<span class="vowel">e</span>ss
                 </div>
-                <div class="vocab-phonetic">/ə ˈmɒn.ɪ.trəs/</div>
+                <div class="vocab-phonetic">/ə ˈmɒn..trəs/</div>
                 <div class="vocab-chinese">班長（女）</div>
                 <div class="syllable-container">
                     <div class="syllable">
@@ -956,7 +942,7 @@
                 tips: ["注意 'mor' 音節要重讀", "'Good' 的 'd' 要輕讀"]
             },
             "Good afternoon": {
-                phonetic: "/ɡʊd ˌɑːftərˈnuːn/",
+                phonetic: "/ɡʊd ɑːftərˈnuːn/",
                 syllables: ["Good", "af", "ter", "noon"],
                 stressed: [3],
                 tips: ["重音在 'noon' 上", "'after' 要連讀"]
