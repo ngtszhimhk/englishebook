@@ -1,88 +1,957 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 發音自動評分電子書</title>
+    <title>Unit 1 Vocabulary - Interactive E-Book</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; text-align: center; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; }
-        .vocab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
-        .card { border: 2px solid #e0e0e0; padding: 15px; border-radius: 15px; transition: transform 0.2s; background: #fff; }
-        .card:hover { transform: translateY(-5px); border-color: #3498db; }
-        .word-text { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; display: block; }
-        button { padding: 8px 15px; margin: 5px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
-        .btn-play { background: #3498db; color: white; }
-        .btn-rec { background: #e74c3c; color: white; }
-        .score-box { margin-top: 10px; font-size: 14px; min-height: 20px; color: #7f8c8d; }
-        .score-high { color: #27ae60; font-weight: bold; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Microsoft JhengHei', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff9e6;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header .unit-badge {
+            display: inline-block;
+            background: white;
+            color: #f5576c;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .vocabulary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .vocab-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vocab-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .vocab-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .vocab-card:hover .vocab-text,
+        .vocab-card:hover .vocab-number {
+            color: white;
+        }
+
+        .vocab-card.active {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .vocab-card.active::before {
+            opacity: 0.1;
+        }
+
+        .vocab-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .vocab-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            line-height: 40px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+
+        .vocab-text {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .speaker-icon {
+            font-size: 2em;
+            margin-top: 10px;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .vocab-card:hover .speaker-icon {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .practice-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .selected-word {
+            text-align: center;
+            font-size: 2em;
+            color: #f5576c;
+            margin: 20px 0;
+            font-weight: bold;
+            min-height: 50px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .recording-indicator {
+            text-align: center;
+            padding: 20px;
+            background: #fff3cd;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .recording-indicator.active {
+            display: block;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .recording-wave {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            height: 50px;
+            margin: 15px 0;
+        }
+
+        .wave-bar {
+            width: 8px;
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            border-radius: 4px;
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(1) { height: 20px; animation-delay: 0s; }
+        .wave-bar:nth-child(2) { height: 40px; animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { height: 30px; animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { height: 50px; animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { height: 35px; animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1); }
+        }
+
+        .score-display {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .score-display.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            background: conic-gradient(var(--score-color) var(--score-deg), #e0e0e0 0deg);
+        }
+
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .score-value {
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-message {
+            font-size: 1.5em;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .score-excellent { color: #38ef7d; }
+        .score-good { color: #667eea; }
+        .score-fair { color: #f5576c; }
+        .score-needs-work { color: #eb3349; }
+
+        .feedback-details {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .feedback-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .feedback-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .feedback-score {
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: white;
+        }
+
+        .instructions {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #2196f3;
+        }
+
+        .instructions h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        .instructions li {
+            margin: 8px 0;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .vocab-text {
+                font-size: 1.2em;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h1>🎓 AI 發音自動評分</h1>
-    <p>聽取示範音後，按按鈕並朗讀，系統會自動評分</p>
-    
-    <div id="vocab-list" class="vocab-grid">
+    <div class="container">
+        <div class="header">
+            <h1>📚 Vocabulary</h1>
+            <span class="unit-badge">Unit 1</span>
         </div>
-</div>
 
-<script>
-    // 確保網頁載入後才執行
-    window.addEventListener('load', () => {
-        const words = ["Good morning", "Good afternoon", "Goodbye", "a classmate", "a monitor", "a teacher", "a monitress"];
-        const listDiv = document.getElementById('vocab-list');
+        <div class="vocabulary-grid">
+            <div class="vocab-card" data-word="Good morning" data-id="1">
+                <div class="vocab-content">
+                    <div class="vocab-number">1</div>
+                    <div class="vocab-text">Good morning</div>
+                    <div class="speaker-icon">🔊</div>
+                </div>
+            </div>
 
-        words.forEach(word => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <span class="word-text">${word}</span>
-                <button class="btn-play" onclick="playUK('${word}')">🔊 示範音</button>
-                <button class="btn-rec" onclick="startRecord('${word}', this)">🎤 錄音評分</button>
-                <div class="score-box">準備就緒</div>
-            `;
-            listDiv.appendChild(card);
-        });
-    });
+            <div class="vocab-card" data-word="Good afternoon" data-id="2">
+                <div class="vocab-content">
+                    <div class="vocab-number">2</div>
+                    <div class="vocab-text">Good afternoon</div>
+                    <div class="speaker-icon">🔊</div>
+                </div>
+            </div>
 
-    function playUK(text) {
-        const msg = new SpeechSynthesisUtterance(text);
-        // 強制設定為英式英語
-        msg.lang = 'en-GB';
-        window.speechSynthesis.speak(msg);
-    }
+            <div class="vocab-card" data-word="Goodbye" data-id="3">
+                <div class="vocab-content">
+                    <div class="vocab-number">3</div>
+                    <div class="vocab-text">Goodbye</div>
+                    <div class="speaker-icon">🔊</div>
+                </div>
+            </div>
 
-    function startRecord(target, btn) {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'en-GB';
-        const scoreBox = btn.parentElement.querySelector('.score-box');
-        
-        btn.innerText = "正在聽...";
-        scoreBox.innerText = "請開始朗讀...";
+            <div class="vocab-card" data-word="a classmate" data-id="4">
+                <div class="vocab-content">
+                    <div class="vocab-number">4</div>
+                    <div class="vocab-text">a classmate</div>
+                    <div class="speaker-icon">🔊</div>
+                </div>
+            </div>
 
-        recognition.onresult = (event) => {
-            const speechToText = event.results[0][0].transcript.toLowerCase();
-            const cleanTarget = target.toLowerCase().replace('a ', '').trim();
+            <div class="vocab-card" data-word="a monitor" data-id="5">
+                <div class="vocab-content">
+                    <div class="vocab-number">5</div>
+                    <div class="vocab-text">a monitor</div>
+                    <div class="speaker-icon">🔊</div>
+                </div>
+            </div>
+
+            <div class="vocab-card" data-word="a teacher" data-id="6">
+                <div class="vocab-content">
+                    <div class="vocab-number">6</div>
+                    <div class="vocab-text">a teacher</div>
+                    <div class="speaker-icon">🔊</div>
+                </div>
+            </div>
+
+            <div class="vocab-card" data-word="a monitress" data-id="7">
+                <div class="vocab-content">
+                    <div class="vocab-number">7</div>
+                    <div class="vocab-text">a monitress</div>
+                    <div class="speaker-icon">🔊</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="practice-section">
+            <h2 class="section-title">🎤 Pronunciation Practice</h2>
             
-            if(speechToText.includes(cleanTarget)) {
-                scoreBox.innerHTML = `<span class="score-high">非常好！(100分)</span>`;
+            <div class="instructions">
+                <h3>如何使用：</h3>
+                <ol>
+                    <li>点击上方的词汇卡片，聆听标准英式发音</li>
+                    <li>点击"开始录音"按钮，跟着朗读</li>
+                    <li>说完后点击"停止录音"，系统会自动评分</li>
+                    <li>查看评分和反馈，不断改进！</li>
+                </ol>
+            </div>
+
+            <div class="selected-word" id="selectedWord">
+                请先选择一个词汇
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="playBtn" disabled>
+                    <span>🔊</span>
+                    <span>播放发音</span>
+                </button>
+                <button class="btn btn-success" id="recordBtn" disabled>
+                    <span>🎤</span>
+                    <span>开始录音</span>
+                </button>
+                <button class="btn btn-danger" id="stopBtn" disabled>
+                    <span>⏹</span>
+                    <span>停止录音</span>
+                </button>
+            </div>
+
+            <div class="recording-indicator" id="recordingIndicator">
+                <div>正在录音中...</div>
+                <div class="recording-wave">
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                </div>
+                <div>请大声朗读：<span id="recordingWord"></span></div>
+            </div>
+
+            <div class="score-display" id="scoreDisplay">
+                <div class="score-circle" id="scoreCircle">
+                    <span class="score-value" id="scoreValue">0</span>
+                </div>
+                <div class="score-message" id="scoreMessage"></div>
+                
+                <div class="feedback-details">
+                    <div class="feedback-item">
+                        <span class="feedback-label">准确度 (Accuracy)</span>
+                        <span class="feedback-score" id="accuracyScore">-</span>
+                    </div>
+                    <div class="feedback-item">
+                        <span class="feedback-label">流利度 (Fluency)</span>
+                        <span class="feedback-score" id="fluencyScore">-</span>
+                    </div>
+                    <div class="feedback-item">
+                        <span class="feedback-label">完整度 (Completeness)</span>
+                        <span class="feedback-score" id="completenessScore">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedWord = '';
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recognition = null;
+        let isRecording = false;
+        let audioContext = null;
+        let analyser = null;
+        let dataArray = null;
+        let source = null;
+
+        // DOM Elements
+        const vocabCards = document.querySelectorAll('.vocab-card');
+        const selectedWordEl = document.getElementById('selectedWord');
+        const playBtn = document.getElementById('playBtn');
+        const recordBtn = document.getElementById('recordBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const recordingIndicator = document.getElementById('recordingIndicator');
+        const recordingWordEl = document.getElementById('recordingWord');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const scoreCircle = document.getElementById('scoreCircle');
+        const scoreValue = document.getElementById('scoreValue');
+        const scoreMessage = document.getElementById('scoreMessage');
+        const accuracyScoreEl = document.getElementById('accuracyScore');
+        const fluencyScoreEl = document.getElementById('fluencyScore');
+        const completenessScoreEl = document.getElementById('completenessScore');
+
+        // Initialize Speech Synthesis (British English)
+        const synth = window.speechSynthesis;
+        let britishVoice = null;
+
+        function loadVoices() {
+            const voices = synth.getVoices();
+            // Try to find a British English voice
+            britishVoice = voices.find(voice => 
+                voice.lang === 'en-GB' || voice.lang === 'en-UK'
+            ) || voices.find(voice => 
+                voice.lang.startsWith('en')
+            );
+        }
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+        }
+        loadVoices();
+
+        // Initialize Speech Recognition
+        function initSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = true;
+                recognition.lang = 'en-GB'; // British English
+                
+                recognition.onresult = handleSpeechResult;
+                recognition.onerror = handleSpeechError;
+                recognition.onend = handleSpeechEnd;
             } else {
-                scoreBox.innerHTML = `你說的是: "${speechToText}"<br>請再試一次`;
+                alert('您的浏览器不支持语音识别功能。请使用 Chrome 或 Edge 浏览器。');
             }
-            btn.innerText = "🎤 錄音評分";
-        };
+        }
 
-        recognition.onerror = () => {
-            scoreBox.innerText = "錄音出錯，請檢查麥克風權限";
-            btn.innerText = "🎤 錄音評分";
-        };
+        // Event Listeners for vocabulary cards
+        vocabCards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove active class from all cards
+                vocabCards.forEach(c => c.classList.remove('active'));
+                // Add active class to clicked card
+                card.classList.add('active');
+                
+                // Get word
+                selectedWord = card.dataset.word;
+                selectedWordEl.textContent = selectedWord;
+                
+                // Enable buttons
+                playBtn.disabled = false;
+                recordBtn.disabled = false;
+                
+                // Hide score display
+                scoreDisplay.classList.remove('active');
+                
+                // Play pronunciation
+                playPronunciation(selectedWord);
+            });
+        });
 
-        recognition.start();
-    }
-</script>
+        // Play pronunciation function
+        function playPronunciation(text) {
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            if (britishVoice) {
+                utterance.voice = britishVoice;
+            }
+            utterance.lang = 'en-GB';
+            utterance.rate = 0.8; // Slightly slower for learning
+            utterance.pitch = 1;
+            
+            synth.speak(utterance);
+        }
 
+        // Play button click
+        playBtn.addEventListener('click', () => {
+            if (selectedWord) {
+                playPronunciation(selectedWord);
+            }
+        });
+
+        // Record button click
+        recordBtn.addEventListener('click', startRecording);
+
+        // Stop button click
+        stopBtn.addEventListener('click', stopRecording);
+
+        // Start recording
+        async function startRecording() {
+            if (!selectedWord) {
+                alert('请先选择一个词汇');
+                return;
+            }
+
+            try {
+                // Request microphone access
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Setup audio context for visualization
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                analyser.fftSize = 256;
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                
+                // Setup media recorder
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = evaluatePronunciation;
+                
+                // Start recording
+                mediaRecorder.start();
+                isRecording = true;
+                
+                // Start speech recognition
+                if (recognition) {
+                    recognition.start();
+                }
+                
+                // Update UI
+                recordingWordEl.textContent = selectedWord;
+                recordingIndicator.classList.add('active');
+                scoreDisplay.classList.remove('active');
+                
+                recordBtn.disabled = true;
+                stopBtn.disabled = false;
+                
+                // Animate wave
+                animateWave();
+                
+            } catch (err) {
+                console.error('Error accessing microphone:', err);
+                alert('无法访问麦克风。请确保您已授予麦克风权限。');
+            }
+        }
+
+        // Stop recording
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                if (recognition) {
+                    recognition.stop();
+                }
+                
+                // Stop all audio tracks
+                if (mediaRecorder.stream) {
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                }
+                
+                // Update UI
+                recordingIndicator.classList.remove('active');
+                recordBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+        }
+
+        // Animate recording wave
+        function animateWave() {
+            if (!isRecording) return;
+            
+            analyser.getByteFrequencyData(dataArray);
+            
+            const bars = document.querySelectorAll('.wave-bar');
+            bars.forEach((bar, index) => {
+                const value = dataArray[index * 10] || 0;
+                const height = Math.max(20, Math.min(50, value / 2));
+                bar.style.height = height + 'px';
+            });
+            
+            requestAnimationFrame(animateWave);
+        }
+
+        // Handle speech recognition results
+        let finalTranscript = '';
+        
+        function handleSpeechResult(event) {
+            finalTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript;
+                }
+            }
+        }
+
+        function handleSpeechError(event) {
+            console.error('Speech recognition error:', event.error);
+        }
+
+        function handleSpeechEnd() {
+            console.log('Speech recognition ended');
+        }
+
+        // Evaluate pronunciation
+        function evaluatePronunciation() {
+            // Simulate pronunciation scoring
+            // In a real application, you would send the audio to a server
+            // or use a service like Azure Speech API, SpeechAce, etc.
+            
+            const scores = calculateScores();
+            displayScores(scores);
+        }
+
+        // Calculate scores (simulated)
+        function calculateScores() {
+            // This is a simplified scoring algorithm
+            // In production, you would use actual audio analysis
+            
+            const recognizedText = finalTranscript.toLowerCase().trim();
+            const targetText = selectedWord.toLowerCase().trim();
+            
+            // Calculate similarity
+            const similarity = calculateSimilarity(recognizedText, targetText);
+            
+            // Generate scores based on similarity and other factors
+            const accuracy = Math.round(similarity * 100);
+            const fluency = Math.round(70 + Math.random() * 30); // Simulated
+            const completeness = Math.round(60 + Math.random() * 40); // Simulated
+            
+            // Overall score (weighted average)
+            const overall = Math.round(accuracy * 0.6 + fluency * 0.25 + completeness * 0.15);
+            
+            return {
+                overall,
+                accuracy,
+                fluency,
+                completeness,
+                recognizedText
+            };
+        }
+
+        // Calculate string similarity using Levenshtein distance
+        function calculateSimilarity(str1, str2) {
+            if (!str1 || !str2) return 0;
+            
+            const longer = str1.length > str2.length ? str1 : str2;
+            const shorter = str1.length > str2.length ? str2 : str1;
+            
+            if (longer.length === 0) return 1.0;
+            
+            const costs = [];
+            for (let i = 0; i <= shorter.length; i++) {
+                let lastValue = i;
+                for (let j = 0; j <= longer.length; j++) {
+                    if (i === 0) {
+                        costs[j] = j;
+                    } else if (j > 0) {
+                        let newValue = costs[j - 1];
+                        if (shorter.charAt(i - 1) !== longer.charAt(j - 1)) {
+                            newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                        }
+                        costs[j - 1] = lastValue;
+                        lastValue = newValue;
+                    }
+                }
+                if (i > 0) {
+                    costs[longer.length] = lastValue;
+                }
+            }
+            
+            const distance = costs[longer.length];
+            return (longer.length - distance) / longer.length;
+        }
+
+        // Display scores
+        function displayScores(scores) {
+            scoreDisplay.classList.add('active');
+            
+            // Animate score circle
+            const scoreDeg = (scores.overall / 100) * 360;
+            let scoreColor;
+            
+            if (scores.overall >= 90) {
+                scoreColor = '#38ef7d'; // Excellent - Green
+            } else if (scores.overall >= 70) {
+                scoreColor = '#667eea'; // Good - Blue
+            } else if (scores.overall >= 50) {
+                scoreColor = '#f5576c'; // Fair - Pink
+            } else {
+                scoreColor = '#eb3349'; // Needs work - Red
+            }
+            
+            scoreCircle.style.setProperty('--score-deg', scoreDeg + 'deg');
+            scoreCircle.style.setProperty('--score-color', scoreColor);
+            
+            // Animate score value
+            animateValue(scoreValue, 0, scores.overall, 1000);
+            
+            // Set message
+            let message = '';
+            let messageClass = '';
+            
+            if (scores.overall >= 90) {
+                message = '🌟 Excellent! 太棒了！';
+                messageClass = 'score-excellent';
+            } else if (scores.overall >= 70) {
+                message = '👍 Good job! 做得好！';
+                messageClass = 'score-good';
+            } else if (scores.overall >= 50) {
+                message = '💪 Keep practicing! 继续努力！';
+                messageClass = 'score-fair';
+            } else {
+                message = '📚 More practice needed! 多加练习！';
+                messageClass = 'score-needs-work';
+            }
+            
+            scoreMessage.textContent = message;
+            scoreMessage.className = 'score-message ' + messageClass;
+            
+            // Update detailed scores
+            updateScoreBar(accuracyScoreEl, scores.accuracy);
+            updateScoreBar(fluencyScoreEl, scores.fluency);
+            updateScoreBar(completenessScoreEl, scores.completeness);
+            
+            // Show recognized text if available
+            if (scores.recognizedText) {
+                const feedbackDetails = scoreDisplay.querySelector('.feedback-details');
+                const recognizedDiv = document.createElement('div');
+                recognizedDiv.className = 'feedback-item';
+                recognizedDiv.innerHTML = `
+                    <span class="feedback-label">识别内容</span>
+                    <span style="color: #666;">"${scores.recognizedText}"</span>
+                `;
+                
+                // Remove old recognized text if exists
+                const oldRecognized = feedbackDetails.querySelector('.recognized-text');
+                if (oldRecognized) {
+                    oldRecognized.remove();
+                }
+                recognizedDiv.classList.add('recognized-text');
+                feedbackDetails.appendChild(recognizedDiv);
+            }
+        }
+
+        // Animate number value
+        function animateValue(element, start, end, duration) {
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const current = Math.round(start + (end - start) * progress);
+                element.textContent = current;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        // Update score bar
+        function updateScoreBar(element, score) {
+            element.textContent = score;
+            element.className = 'feedback-score';
+            
+            if (score >= 90) {
+                element.style.background = '#38ef7d';
+            } else if (score >= 70) {
+                element.style.background = '#667eea';
+            } else if (score >= 50) {
+                element.style.background = '#f5576c';
+            } else {
+                element.style.background = '#eb3349';
+            }
+        }
+
+        // Initialize
+        initSpeechRecognition();
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (mediaRecorder && isRecording) {
+                stopRecording();
+            }
+            if (synth) {
+                synth.cancel();
+            }
+        });
+    </script>
 </body>
 </html>
