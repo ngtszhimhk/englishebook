@@ -5,83 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>互動英語電子書</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        h1 { color: #2c3e50; }
-        .word-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; width: 100%; max-width: 600px; }
-        .word-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
-        .word-text { font-size: 24px; font-weight: bold; margin-bottom: 10px; cursor: pointer; color: #007bff; }
-        .word-text:hover { color: #0056b3; text-decoration: underline; }
-        button { margin: 5px; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; }
-        .btn-record { background: #ff4757; color: white; }
-        .btn-stop { background: #2f3542; color: white; display: none; }
-        .btn-play { background: #2ed573; color: white; display: none; }
-        audio { margin-top: 10px; width: 100%; }
+        body { font-family: sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .word-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; width: 100%; max-width: 800px; }
+        .word-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: center; }
+        .word-text { font-size: 28px; font-weight: bold; margin-bottom: 15px; cursor: pointer; color: #2d3436; }
+        .word-text:hover { color: #0984e3; }
+        button { margin: 5px; padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; transition: 0.3s; }
+        .btn-record { background: #ff7675; color: white; }
+        .btn-stop { background: #636e72; color: white; display: none; }
+        .btn-play { background: #55efc4; color: #2d3436; display: none; font-weight: bold; }
+        .status-dot { height: 10px; width: 10px; background-color: #bbb; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .recording .status-dot { background-color: #ff4757; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <h1>📖 英語詞語練習</h1>
-    <p>點擊單字聽英式發音，錄製後可點擊播放聽回效果。</p>
+    <h1>🇬🇧 英語發音與錄音練習</h1>
+    <p>1. 點擊單字聽英式發音 | 2. 按錄音開始練習 | 3. 按停止後點播放</p>
 
     <div class="word-grid" id="grid"></div>
 
     <script>
-        // 在這裡輸入你的 7 個詞語
+        // 你的 7 個詞語
         const words = ["Apple", "Banana", "Cherry", "Dragonfruit", "Elderberry", "Fig", "Grape"];
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioUrls = {}; // 儲存每個單字的錄音網址
 
         const grid = document.getElementById('grid');
 
         words.forEach((word, index) => {
             const card = document.createElement('div');
             card.className = 'word-card';
+            card.id = `card-${index}`;
             card.innerHTML = `
-                <div class="word-text" onclick="speak('${word}')">${word}</div>
-                <button class="btn-record" id="rec-${index}" onclick="startRecording(${index})">🎤 錄音</button>
+                <div class="word-text" onclick="speak('${word}')">${word} 🔊</div>
+                <div id="status-${index}"><span class="status-dot"></span>待命</div>
+                <button class="btn-record" id="rec-${index}" onclick="startRecording(${index})">🎤 開始錄音</button>
                 <button class="btn-stop" id="stop-${index}" onclick="stopRecording(${index})">⏹ 停止</button>
-                <button class="btn-play" id="play-${index}" onclick="playRecording(${index})">▶️ 聽回</button>
+                <button class="btn-play" id="play-${index}" onclick="playRecording(${index})">▶️ 聽回我的聲音</button>
             `;
             grid.appendChild(card);
         });
 
-        // 1. 英式發音功能
         function speak(text) {
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-GB'; // 設定為英式英語
+            utterance.lang = 'en-GB';
             window.speechSynthesis.speak(utterance);
         }
 
-        // 2. 錄音功能
-        let recorders = [];
-        let audioChunks = [];
-
         async function startRecording(index) {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream);
-            recorders[index] = mediaRecorder;
-            audioChunks[index] = [];
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
 
-            mediaRecorder.ondataavailable = e => audioChunks[index].push(e.data);
-            mediaRecorder.onstop = () => {
-                const blob = new Blob(audioChunks[index], { type: 'audio/wav' });
-                const url = URL.createObjectURL(blob);
-                window[`audioUrl-${index}`] = url;
-                document.getElementById(`play-${index}`).style.display = 'inline-block';
-            };
+                mediaRecorder.ondataavailable = e => {
+                    if (e.data.size > 0) audioChunks.push(e.data);
+                };
 
-            mediaRecorder.start();
-            document.getElementById(`rec-${index}`).style.display = 'none';
-            document.getElementById(`stop-${index}`).style.display = 'inline-block';
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    if (audioUrls[index]) URL.revokeObjectURL(audioUrls[index]); // 釋放舊記憶體
+                    audioUrls[index] = URL.createObjectURL(audioBlob);
+                    document.getElementById(`play-${index}`).style.display = 'inline-block';
+                    document.getElementById(`status-${index}`).innerHTML = '<span class="status-dot" style="background:#55efc4"></span>錄音已就緒';
+                };
+
+                mediaRecorder.start();
+                document.getElementById(`card-${index}`).classList.add('recording');
+                document.getElementById(`rec-${index}`).style.display = 'none';
+                document.getElementById(`stop-${index}`).style.display = 'inline-block';
+                document.getElementById(`status-${index}`).innerHTML = '<span class="status-dot"></span>錄音中...';
+            } catch (err) {
+                alert("無法開啟麥克風，請檢查瀏覽器權限設定！");
+            }
         }
 
         function stopRecording(index) {
-            recorders[index].stop();
-            document.getElementById(`stop-${index}`).style.display = 'none';
-            document.getElementById(`rec-${index}`).style.display = 'inline-block';
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                // 停止所有麥克風軌道以節省電力
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                document.getElementById(`card-${index}`).classList.remove('recording');
+                document.getElementById(`stop-${index}`).style.display = 'none';
+                document.getElementById(`rec-${index}`).style.display = 'inline-block';
+            }
         }
 
         function playRecording(index) {
-            const audio = new Audio(window[`audioUrl-${index}`]);
-            audio.play();
+            if (audioUrls[index]) {
+                const audio = new Audio(audioUrls[index]);
+                audio.play();
+            }
         }
     </script>
 </body>
